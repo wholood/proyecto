@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string.h>
-
+//novale
 using namespace std;
 class Dispositivo; //Cabecera para que no se glichee
 
