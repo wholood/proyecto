@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string.h>
-//novale
+
 using namespace std;
 class Dispositivo; //Cabecera para que no se glichee
 
@@ -66,7 +66,7 @@ void insertarlista(Dispositivo *&lista, string nombre, string direccion){
     Dispositivo *aux1 = lista;
     Dispositivo *aux2;
 
-    while((aux1!=NULL)&&(aux1->ip <direccion)){ //Verificar si hay alguna ip menor a n y establecer el auxiliar para agregar el elemento en medio
+    while((aux1!=NULL)&&(aux1->hostname <nombre)){ //Verificar si hay alguna ip menor a n y establecer el auxiliar para agregar el elemento en medio
         aux2=aux1;
         aux1=aux1->siguiente_D;
     }
@@ -127,6 +127,45 @@ void establecer_conexion(int salto_1, int ping_1, string tipo_1, string h_1, str
         }
     }
 };
+///-------------------------------------------------------///
+
+void eliminarDispositivo (Dispositivo *&lista, string nombre){
+    if(lista!=NULL){ //Por si acaso
+        Dispositivo  *aux_borrar = buscardispositivo(lista,nombre);
+        Dispositivo  *anterior = lista;
+        
+        if(anterior==aux_borrar){
+            lista=aux_borrar->siguiente_D;
+        }
+        else{
+            while ((aux_borrar != NULL)&&(anterior->siguiente_D != aux_borrar)){
+                anterior=anterior->siguiente_D; //Voy recorriendo la lista siempre y cuando no consiga nada hasta el final (NULL)
+            }
+            anterior->siguiente_D=aux_borrar->siguiente_D;
+        }
+        //respaldar el dispositivo a borrar
+        delete aux_borrar;
+    }
+}
+
+void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEEEEEEEEE
+    if(lista!=NULL){ //Por si acaso
+        Relacion  *aux_borrar ;//BUSCARRELACION
+        Relacion  *anterior = lista;
+        
+        if(anterior==aux_borrar){
+            lista=aux_borrar->siguiente_R;
+        }
+        else{
+            while ((aux_borrar != NULL)&&(anterior->siguiente_R != aux_borrar)){
+                anterior=anterior->siguiente_R; //Voy recorriendo la lista siempre y cuando no consiga nada hasta el final (NULL)
+            }
+            anterior->siguiente_R=aux_borrar->siguiente_R;
+        }
+        //respaldar la relacion a borrar
+        delete aux_borrar;
+    }
+}
 
 ///-------------------------------------------------------///
 int main (){
