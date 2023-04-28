@@ -6,7 +6,6 @@ class Dispositivo; //Cabecera para que no se glichee
 
 struct Relacion{ 
     int ping;
-    int saltos;
     string tipo;
     Dispositivo *con; //Con que dispositivo existe la conexion
     Relacion *siguiente_R; //Puntero para la lista de relaciones de cada dispositivo
@@ -23,11 +22,10 @@ public:
     Dispositivo(){
         cont_relacion=0; //Por si acaso
     };
-    void conectar (int salto_1, int ping_1, string tipo_1, Dispositivo *pana){
+    void conectar (int ping_1, string tipo_1, Dispositivo *pana){
         //Crea una nueva relacion en la lista de relaciones del dispositivo.
 
         Relacion *nueva_Relacion = new Relacion(); 
-        nueva_Relacion->saltos =salto_1;
         nueva_Relacion->ping =ping_1;
         nueva_Relacion->tipo =tipo_1;
 
@@ -114,15 +112,15 @@ bool verificar_relacion (Dispositivo *h1, Dispositivo *h2){
     //Si llego al final de la lista retorno que no hay relacion existente (TRUE) si no llegue al final consegui h2 por ende (FALSE)
 };
 
-void establecer_conexion(int salto_1, int ping_1, string tipo_1, string h_1, string h_2, Dispositivo *listado){
+void establecer_conexion(int ping_1, string tipo_1, string h_1, string h_2, Dispositivo *listado){
     Dispositivo *host1 = buscardispositivo(listado,h_1); //Dado un nombre (host o ip) consigo la direccion del dispositivo en la lista
     Dispositivo *host2 = buscardispositivo(listado,h_2);
 
     if (host1!=NULL && host2!=NULL){//Mientras los apuntadores no sean nulos, si son nulos no existe el dispositivo
         if(verificar_relacion(host1,host2)){ //Verifica que no exista relacion entre ambos dispositivos
             if(host1->cont_relacion<12 && host2->cont_relacion<12){ //Verifica que tengan espacio para conexion
-                host1->conectar(salto_1,ping_1,tipo_1,host2); //Establezco la relación en cada uno de los dispositivos
-                host2->conectar(salto_1,ping_1,tipo_1,host1);    
+                host1->conectar(ping_1,tipo_1,host2); //Establezco la relación en cada uno de los dispositivos
+                host2->conectar(ping_1,tipo_1,host1);    
             }
         }
     }
@@ -148,11 +146,12 @@ void eliminarDispositivo (Dispositivo *&lista, string nombre){
     }
 }
 
-void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEEEEEEEEE
+void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEEEEEEEEEmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
     if(lista!=NULL){ //Por si acaso
         Relacion  *aux_borrar ;//BUSCARRELACION
         Relacion  *anterior = lista;
         
+        //Modificacion de la lista de relaciones del dispositivo
         if(anterior==aux_borrar){
             lista=aux_borrar->siguiente_R;
         }
