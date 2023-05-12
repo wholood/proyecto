@@ -178,7 +178,7 @@ void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEE
     }
 }
 
-///-------------------------------------------------------///
+///-------------------------------------------------------/// BUSQUEDA DE RUTAS DIABOLICAS
 class Cola {
 public:
     struct Nodo {
