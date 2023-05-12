@@ -54,6 +54,7 @@ public:
     };
 };
 
+
 ///--------------------------------------------------------///
 void insertarlista(Dispositivo *&lista, string nombre, string direccion){
 
@@ -167,6 +168,11 @@ void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEE
 }
 
 ///-------------------------------------------------------///
+bool validarsolución(int solucion[], int nivel, int cable[]){
+
+}
+
+///-------------------------------------------------------/// 
 int main (){
     Dispositivo *lista = NULL;
     string name[5]={"a","b","c","d","e"};
