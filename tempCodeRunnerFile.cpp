@@ -1,0 +1,1 @@
+cola_control.agregar_cola(vecino);

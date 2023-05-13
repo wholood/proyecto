@@ -259,10 +259,13 @@ public:
     }
 };
 
+//----Falta arreglar multiples rutas indirectas!!!!!!!!!!!!!!!!!
+
 void BFS(string ini, string obj, Dispositivo *lista) {
     Dispositivo *inicio=buscardispositivo(lista,ini);
     Dispositivo *objetivo=buscardispositivo(lista,obj);
     Cola cola_control;
+    Cola ruta;
     lista_visitado visitados;
 
     cola_control.agregar_cola(inicio); //Dispositivo ruta
@@ -271,10 +274,16 @@ void BFS(string ini, string obj, Dispositivo *lista) {
     while (!cola_control.vacia()) { //Mientras existan elementos que revisar
         Dispositivo *actual = cola_control.quien_al_frente(); //Tomamos el dispositivo que esta al frente
         cola_control.sacar_cola(); //Como ya tengo el puntero al dispositivo en actual entonces lo puedo sacar de la cola. 
+        ruta.agregar_cola(actual);
 
         if (actual == objetivo) {
             cout << "Ruta encontrada" << endl;
             //-------------------- Imprime o almacena la ruta encontrada
+            while (!ruta.vacia()){
+                cout<<ruta.frente->dispositivo->hostname<<"->";
+                ruta.sacar_cola();
+            }
+            cout<<endl;
             
         }
 
@@ -286,7 +295,10 @@ void BFS(string ini, string obj, Dispositivo *lista) {
             Dispositivo *vecino = relacion_actual->con; //Extrae el dispositivo 
             if (!visitados.contiene(vecino)) { //si el dispositivo no esta revisado
                 cola_control.agregar_cola(vecino); //Agrego el dispositivo a la cola para revisar
-                visitados.insertar(vecino, true); //Lo marco como revisado
+                if(vecino!=objetivo){
+                    visitados.insertar(vecino, true); //Lo marco como revisado    
+                }
+                
             }
             relacion_actual = relacion_actual->siguiente_R; //Paso al siguiente dispositivo
         }
@@ -305,11 +317,11 @@ int main (){
         //cin>>valor;
         insertarlista(lista,name[i],dire[i]);
     }
-    establecer_conexion(12,"f","a","b",lista);
+    establecer_conexion(1,"f","a","b",lista);
     establecer_conexion(2,"f","a","c",lista);
-    establecer_conexion(2,"f","a","g",lista);
-    establecer_conexion(2,"f","b","c",lista);
-    establecer_conexion(2,"f","c","g",lista);
+    establecer_conexion(3,"f","a","g",lista);
+    establecer_conexion(4,"f","b","c",lista);
+    establecer_conexion(5,"f","c","g",lista);
 
     mostrarrelacion(buscardispositivo(lista,"a")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"b")->lista_vecinos);cout<<endl;
