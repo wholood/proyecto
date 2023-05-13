@@ -4,5 +4,11 @@
         "ostream": "cpp",
         "cmath": "cpp",
         "iostream": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabled",
+    "diffEditor.codeLens": true,
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.experimental.pasteActions.enabled": true,
+    "problems.showCurrentInStatus": true,
+    "problems.decorations.enabled": true
 }

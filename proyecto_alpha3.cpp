@@ -276,7 +276,6 @@ void BFS(string ini, string obj, Dispositivo *lista) {
             cout << "Ruta encontrada" << endl;
             //-------------------- Imprime o almacena la ruta encontrada
             
-            return;
         }
 
         cout<<"actual: "<<actual->hostname<<"->"<<endl;
@@ -308,34 +307,26 @@ int main (){
     }
     establecer_conexion(12,"f","a","b",lista);
     establecer_conexion(2,"f","a","c",lista);
-    establecer_conexion(3,"f","b","d",lista);
-    establecer_conexion(4,"f","b","e",lista);
-    establecer_conexion(6,"f","c","f",lista);
-    establecer_conexion(5,"f","c","g",lista);
-    establecer_conexion(15,"f","d","h",lista);
-    establecer_conexion(65,"f","d","i",lista);
-    establecer_conexion(44,"f","e","j",lista);
-    establecer_conexion(12,"f","f","l",lista);
-    establecer_conexion(16,"f","f","m",lista);
-    establecer_conexion(19,"f","g","n",lista);
-    establecer_conexion(14,"f","g","o",lista);
+    establecer_conexion(2,"f","a","g",lista);
+    establecer_conexion(2,"f","b","c",lista);
+    establecer_conexion(2,"f","c","g",lista);
 
     mostrarrelacion(buscardispositivo(lista,"a")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"b")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"c")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"d")->lista_vecinos);cout<<endl;
+    /*mostrarrelacion(buscardispositivo(lista,"d")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"e")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"f")->lista_vecinos);cout<<endl;
+    mostrarrelacion(buscardispositivo(lista,"f")->lista_vecinos);cout<<endl;*/
     mostrarrelacion(buscardispositivo(lista,"g")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"h")->lista_vecinos);cout<<endl;
+    /*mostrarrelacion(buscardispositivo(lista,"h")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"i")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"k")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"l")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"m")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;
+    mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
-    BFS("a","k",lista);
+    BFS("a","g",lista);
     cout<<endl;
     mostrarlista(lista);
 
