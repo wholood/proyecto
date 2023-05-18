@@ -186,11 +186,7 @@ void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEE
 }
 
 ///-------------------------------------------------------/// BUSQUEDA DE RUTAS DIABOLICAS
-struct Nodo {
-        Dispositivo *dispositivo;
-        Cola *Solu;
-        Nodo *siguiente;
-    };
+struct Nodo;
 class Cola {
 public:
     Nodo *frente;
@@ -254,14 +250,19 @@ public:
     }
 };
 
-Cola Soluciones;
+struct Nodo {
+    Dispositivo *dispositivo;
+    Cola *Solu;
+    Nodo *siguiente;
+};
+
 
 void buscarRutas(Dispositivo *origen, Dispositivo *objetivo) {
     Cola Solucion; // Cola que almacena las soluciones (rutas)
     Cola Ruta; // Cola auxiliar para almacenar cada ruta
 
     Ruta.agregar_dispCola(origen); // Agregar el dispositivo origen a la ruta inicial
-    Ruta.aux_ping = 0; // Inicializar el valor aux_ping en 0
+    //Ruta.aux_ping = 0; // Inicializar el valor aux_ping en 0
 
     Solucion.agregar_colaCola(&Ruta); // Agregar la ruta inicial a la cola de soluciones
 
@@ -402,7 +403,7 @@ int main (){
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
-
+    buscarRutas(buscardispositivo(lista,"a"),buscardispositivo(lista, "g"));
     cout<<endl;
     mostrarlista(lista);
 
