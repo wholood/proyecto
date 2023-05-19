@@ -265,7 +265,7 @@ class Cola {
 Cola Soluciones;
 Cola Ruta;
 
-void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio){
+void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispositivo* dedonde){
     cout<<"Comienzo back. Actual "<<actual->hostname<<"| Objetivo "<<objetivo->hostname<<"| inicio "<<inicio->hostname<<endl;
     Ruta.agregar_dispCola(actual); //Agrego el actual a la cola de solucion
 
@@ -287,7 +287,7 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio){
             auxiliar=auxiliar->siguiente_R; //Si no es el objetivo continuo revisando
         }
         else if(auxiliar->siguiente_R==NULL){
-            auxiliar->con_quien=NULL;
+            break;
         }
     }
 
@@ -300,13 +300,15 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio){
     Relacion *aux=actual->lista_vecinos; //Creo un auxiliar para iterar en la lista de vecinos del actual
 
     for(int i=1; i<=actual->cont_relacion;i++){
-        if(aux->con_quien == inicio){
-            aux=aux->siguiente_R;
-        }
-        else{
-            cout<<actual->hostname<<"--"<<i<<endl;
-            back(aux->con_quien,objetivo, inicio);
-            aux=aux->siguiente_R;
+        if(aux->con_quien != objetivo){
+            if(aux->con_quien == inicio || aux->con_quien == dedonde){
+                aux=aux->siguiente_R;
+            }
+            else{
+                cout<<actual->hostname<<"--"<<i<<endl;
+                back(aux->con_quien,objetivo, inicio, actual);
+                aux=aux->siguiente_R;
+            }
         }
     }
     return;
@@ -343,8 +345,10 @@ int main (){
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
-    back(buscardispositivo(lista,"a"),buscardispositivo(lista,"g"),buscardispositivo(lista,"a"));
+    back(buscardispositivo(lista,"a"),buscardispositivo(lista,"g"),buscardispositivo(lista,"a"),buscardispositivo(lista,"a"));
     cout<<endl;
+    mostrarrelacion(buscardispositivo(lista,"b")->lista_vecinos);cout<<endl;
+
     mostrarlista(lista);
 
     return 0;
