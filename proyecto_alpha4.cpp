@@ -241,7 +241,7 @@ class Cola {
         aux = ruta;
         agregar_colaCola(&aux);
 
-    }
+    };
 
     void sacar_cola() {
         if (frente != NULL) { //Si el frente NO es nulo
