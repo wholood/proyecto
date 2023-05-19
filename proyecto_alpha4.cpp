@@ -186,9 +186,14 @@ void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEE
 }
 
 ///-------------------------------------------------------/// BUSQUEDA DE RUTAS DIABOLICAS
-struct Nodo;
 class Cola {
 public:
+
+struct Nodo {
+    Dispositivo *dispositivo;
+    Cola *Solu;
+    Nodo *siguiente;
+};
     Nodo *frente;
     Nodo *final;
     int aux_ping;
@@ -218,6 +223,8 @@ public:
     }
     void agregar_colaCola(Cola *cola) {
         Nodo *nuevo = new Nodo(); //Crea un nodo
+        Cola aux;
+
         nuevo->Solu=cola; //Le asigna el apuntador al dispositivo
         nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
 
@@ -230,6 +237,11 @@ public:
         }
     }
 
+    void clonar(Cola *ruta){
+        Cola aux;
+        aux
+
+    }
 
     void sacar_cola() {
         if (frente != NULL) { //Si el frente NO es nulo
@@ -250,127 +262,24 @@ public:
     }
 };
 
-struct Nodo {
-    Dispositivo *dispositivo;
-    Cola *Solu;
-    Nodo *siguiente;
-};
+Cola Soluciones;
 
-
-void buscarRutas(Dispositivo *origen, Dispositivo *objetivo) {
-    Cola Solucion; // Cola que almacena las soluciones (rutas)
-    Cola Ruta; // Cola auxiliar para almacenar cada ruta
-
-    Ruta.agregar_dispCola(origen); // Agregar el dispositivo origen a la ruta inicial
-    //Ruta.aux_ping = 0; // Inicializar el valor aux_ping en 0
-
-    Solucion.agregar_colaCola(&Ruta); // Agregar la ruta inicial a la cola de soluciones
-
-    while (!Solucion.vacia()) { // Mientras haya soluciones pendientes en la cola
-        Cola rutaActual = *Solucion.frente->Solu; // Obtener la ruta actual de la cola de soluciones
-        Dispositivo *dispositivoActual = rutaActual.quien_al_frente(); // Obtener el dispositivo actual de la ruta
-
-        if (dispositivoActual == objetivo) { // Si se llegó al dispositivo objetivo
-            // Imprimir la ruta y su valor aux_ping
-            Nodo *nodoRuta = rutaActual.frente;
-            while (nodoRuta != NULL) {
-                cout << nodoRuta->dispositivo->hostname << " -> ";
-                nodoRuta = nodoRuta->siguiente;
-            }
-            cout << "Valor aux_ping: " << rutaActual.aux_ping << endl;
-        }
-
-        // Obtener las relaciones del dispositivo actual
-        Relacion *relacionActual = dispositivoActual->lista_vecinos;
-        while (relacionActual != NULL) {
-            if (!existeEnRuta(relacionActual->con_quien, &rutaActual)) { // Evitar bucles en la ruta
-                Cola nuevaRuta = rutaActual; // Crear una copia de la ruta actual
-                nuevaRuta.agregar_dispCola(relacionActual->con_quien); // Agregar el siguiente dispositivo a la nueva ruta
-                nuevaRuta.aux_ping += relacionActual->ping; // Actualizar el valor aux_ping de la nueva ruta
-                Solucion.agregar_colaCola(&nuevaRuta); // Agregar la nueva ruta a la cola de soluciones
-            }
-            relacionActual = relacionActual->siguiente_R;
-        }
-
-        Solucion.sacar_cola(); // Sacar la ruta actual de la cola de soluciones
-    }
-}
-
-bool existeEnRuta(Dispositivo *dispositivo, Cola *ruta) {
-    Nodo *nodoRuta = ruta->frente;
-    while (nodoRuta != NULL) {
-        if (nodoRuta->dispositivo == dispositivo) {
-            return true;
-        }
-        nodoRuta = nodoRuta->siguiente;
-    }
-    return false;
-}
-void imprimirRutas(Dispositivo *origen, Dispositivo *objetivo) {
-    Cola Solucion; // Cola que almacena las soluciones (rutas)
-    Cola Ruta; // Cola auxiliar para almacenar cada ruta
-
-    Ruta.agregar_dispCola(origen); // Agregar el dispositivo origen a la ruta inicial
-    Ruta.aux_ping = 0; // Inicializar el valor aux_ping en 0
-
-    Solucion.agregar_colaCola(&Ruta); // Agregar la ruta inicial a la cola de soluciones
-
-    while (!Solucion.vacia()) { // Mientras haya soluciones pendientes en la cola
-        Cola rutaActual = *Solucion.frente->Solu; // Obtener la ruta actual de la cola de soluciones
-        Dispositivo *dispositivoActual = rutaActual.quien_al_frente(); // Obtener el dispositivo actual de la ruta
-
-        if (dispositivoActual == objetivo) { // Si se llegó al dispositivo objetivo
-            // Imprimir la ruta y su valor aux_ping
-            Nodo *nodoRuta = rutaActual.frente;
-            while (nodoRuta != NULL) {
-                cout << nodoRuta->dispositivo->hostname << " -> ";
-                nodoRuta = nodoRuta->siguiente;
-            }
-            cout << "Valor aux_ping: " << rutaActual.aux_ping << endl;
-        }
-
-        // Obtener las relaciones del dispositivo actual
-        Relacion *relacionActual = dispositivoActual->lista_vecinos;
-        while (relacionActual != NULL) {
-            if (!existeEnRuta(relacionActual->con_quien, &rutaActual)) { // Evitar bucles en la ruta
-                Cola nuevaRuta = rutaActual; // Crear una copia de la ruta actual
-                nuevaRuta.agregar_dispCola(relacionActual->con_quien); // Agregar el siguiente dispositivo a la nueva ruta
-                nuevaRuta.aux_ping += relacionActual->ping; // Actualizar el valor aux_ping de la nueva ruta
-                Solucion.agregar_colaCola(&nuevaRuta); // Agregar la nueva ruta a la cola de soluciones
-            }
-            relacionActual = relacionActual->siguiente_R;
-        }
-
-        Solucion.sacar_cola(); // Sacar la ruta actual de la cola de soluciones
-    }
-}
-
-
-
-/*void back(Dispositivo *actual, Dispositivo *objetivo, Cola *soluciones, int nivel){
-    if(nivel > actual->cont_relacion) return; //llegar al numero máximo de relacion
-
+void back(Dispositivo *actual, Dispositivo *objetivo, Cola *soluciones){
     Cola Ruta;
     Ruta.agregar_dispCola(actual);
 
-    for(Dispositivo *auxiliar; auxiliar!=NULL;){
-        auxiliar=actual->lista_vecinos->con_quien;
+    Relacion *auxiliar=actual->lista_vecinos;
 
-        if(auxiliar->lista_vecinos->con_quien != objetivo){
-            if(auxiliar->lista_vecinos->con_quien == actual){
-                auxiliar=auxiliar->lista_vecinos->siguiente_R->con_quien;
-            }
+    while(auxiliar->con_quien!=NULL){
+        if(auxiliar->con_quien==objetivo){
+            Ruta.agregar_dispCola(auxiliar->con_quien);
+            Soluciones.agregar_colaCola(Ruta);
         }
-        else{
-            Ruta.agregar_dispCola(auxiliar);
-            return;
-        }   
+        
+
     }
     
-    
-    
-
-};*/
+};
 
 ///-------------------------------------------------------/// 
 int main (){
@@ -403,7 +312,6 @@ int main (){
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
-    buscarRutas(buscardispositivo(lista,"a"),buscardispositivo(lista, "g"));
     cout<<endl;
     mostrarlista(lista);
 
