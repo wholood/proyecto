@@ -241,7 +241,7 @@ struct Nodo {
         Cola aux;
         aux
 
-    }
+    };
 
     void sacar_cola() {
         if (frente != NULL) { //Si el frente NO es nulo
