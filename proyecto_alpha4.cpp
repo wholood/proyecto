@@ -5,7 +5,7 @@ using namespace std;
 class Dispositivo; //Cabecera para que no se glichee
 
 class Relacion{
-public: 
+    public: 
     int ping;
     string tipo;
     Dispositivo *con_quien; //Con que dispositivo existe la conexion
@@ -19,13 +19,13 @@ public:
 };
 
 class Dispositivo{
-public:
+    public:
     string hostname;
     string ip;
     int cont_relacion; //Contador de relaciones existentes
     Relacion *lista_vecinos; //Literalmente lista de las conexiones
     Dispositivo *siguiente_D; //Puntero para la lista de dispositivos del main
-public:
+    public:
     Dispositivo(){
         cont_relacion=0; //Por si acaso
         lista_vecinos=NULL;
@@ -187,13 +187,13 @@ void eliminarRelacion (Relacion *&lista, string nombre){ //PPPPPPPPPPENDIENTEEEE
 
 ///-------------------------------------------------------/// BUSQUEDA DE RUTAS DIABOLICAS
 class Cola {
-public:
+    public:
 
-struct Nodo {
-    Dispositivo *dispositivo;
-    Cola *Solu;
-    Nodo *siguiente;
-};
+    struct Nodo {
+        Dispositivo *dispositivo;
+        Cola *Solu;
+        Nodo *siguiente;
+    };
     Nodo *frente;
     Nodo *final;
     int aux_ping;
@@ -223,7 +223,6 @@ struct Nodo {
     }
     void agregar_colaCola(Cola *cola) {
         Nodo *nuevo = new Nodo(); //Crea un nodo
-        Cola aux;
 
         nuevo->Solu=cola; //Le asigna el apuntador al dispositivo
         nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
@@ -237,9 +236,10 @@ struct Nodo {
         }
     }
 
-    void clonar(Cola *ruta){
+    void clonar(Cola ruta){
         Cola aux;
-        aux
+        aux = ruta;
+        agregar_colaCola(&aux);
 
     }
 
@@ -255,30 +255,61 @@ struct Nodo {
     }
 
     Dispositivo *quien_al_frente() {
-        return frente->dispositivo; //Me dice que dispositivo esta al frente de la cola
+        return (frente!=NULL)? frente->dispositivo: NULL; //Me dice que dispositivo esta al frente de la cola
     }
     Cola *solucion_al_frente(){
-        return frente->Solu; //Me dice cual es la cola de relaciones que esta al frente.
+        return (frente!=NULL)? frente->Solu: NULL; //Me dice cual es la cola de relaciones que esta al frente.
     }
 };
 
 Cola Soluciones;
+Cola Ruta;
 
-void back(Dispositivo *actual, Dispositivo *objetivo, Cola *soluciones){
-    Cola Ruta;
-    Ruta.agregar_dispCola(actual);
+void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio){
+    cout<<"Comienzo back. Actual "<<actual->hostname<<"| Objetivo "<<objetivo->hostname<<"| inicio "<<inicio->hostname<<endl;
+    Ruta.agregar_dispCola(actual); //Agrego el actual a la cola de solucion
 
-    Relacion *auxiliar=actual->lista_vecinos;
+    Relacion *auxiliar=actual->lista_vecinos; //Establezco un auxiliar para recorrer a los vecinos
 
-    while(auxiliar->con_quien!=NULL){
-        if(auxiliar->con_quien==objetivo){
-            Ruta.agregar_dispCola(auxiliar->con_quien);
-            Soluciones.agregar_colaCola(Ruta);
+    while(auxiliar->con_quien!=NULL){ //Mientras que no llegue al final de los vecinos...
+        if(auxiliar->con_quien==objetivo){ //Si llegue al objetivo chill
+            Ruta.agregar_dispCola(auxiliar->con_quien); //Agrego solucion
+            //Soluciones.clonar(Ruta); //Clono en la cola de soluciones
+            //desencolo todo de la ruta porque ya la almacene
+            while(Ruta.quien_al_frente()!=NULL){ //vacio la cola
+                cout<<"("<<Ruta.quien_al_frente()->hostname<<")"<<"->";
+                Ruta.sacar_cola();   
+            }
+            cout<<endl;
+            break;//salgo del bucle
         }
-        
-
+        else if (auxiliar->siguiente_R!=NULL){
+            auxiliar=auxiliar->siguiente_R; //Si no es el objetivo continuo revisando
+        }
+        else if(auxiliar->siguiente_R==NULL){
+            auxiliar->con_quien=NULL;
+        }
     }
+
+    while(Ruta.quien_al_frente()!=NULL){
+        Ruta.sacar_cola();    
+    } //Liberamos la cola antes de hacer backtraking
+
+    Ruta.agregar_dispCola(actual); //Agrego de nuevo el dispositivo de donde estoy partiendo
     
+    Relacion *aux=actual->lista_vecinos; //Creo un auxiliar para iterar en la lista de vecinos del actual
+
+    for(int i=1; i<=actual->cont_relacion;i++){
+        if(aux->con_quien == inicio){
+            aux=aux->siguiente_R;
+        }
+        else{
+            cout<<actual->hostname<<"--"<<i<<endl;
+            back(aux->con_quien,objetivo, inicio);
+            aux=aux->siguiente_R;
+        }
+    }
+    return;
 };
 
 ///-------------------------------------------------------/// 
@@ -312,6 +343,7 @@ int main (){
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
+    back(buscardispositivo(lista,"a"),buscardispositivo(lista,"g"),buscardispositivo(lista,"a"));
     cout<<endl;
     mostrarlista(lista);
 
