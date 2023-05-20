@@ -3,6 +3,8 @@
 
 using namespace std;
 class Dispositivo; //Cabecera para que no se glichee
+Dispositivo *lista = NULL;
+
 
 class Relacion{
     public: 
@@ -190,13 +192,14 @@ class Cola {
     public:
 
     struct Nodo {
-        Dispositivo *dispositivo;
-        Cola *Solu;
+        string *dispositivo;
         Nodo *siguiente;
+        int indice;
     };
     Nodo *frente;
     Nodo *final;
     int aux_ping;
+
 
     Cola(){ //Constructor para la cola vacia
         frente=NULL; 
@@ -208,9 +211,10 @@ class Cola {
         return frente == NULL;
     }
 
-    void agregar_dispCola(Dispositivo *dispositivo) {
+    void agregar_ruta() {
         Nodo *nuevo = new Nodo(); //Crea un nodo
-        nuevo->dispositivo=dispositivo; //Le asigna el apuntador al dispositivo
+        nuevo->dispositivo=new string [500]; //Le asigna el apuntador al dispositivo
+        nuevo->indice=0;
         nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
 
         if (final != NULL) {
@@ -221,28 +225,7 @@ class Cola {
             frente = nuevo; //Si la cola esta vacia entonces nuevo va a ser el principio y el fin
         }
     }
-    void agregar_colaCola(Cola *cola) {
-        Nodo *nuevo = new Nodo(); //Crea un nodo
-
-        nuevo->Solu=cola; //Le asigna el apuntador al dispositivo
-        nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
-
-        if (final != NULL) {
-            final->siguiente = nuevo; //Añadimos a nuevo atras del ultimo de la cola
-        }
-        final = nuevo; //Nuevo será el final de la cola
-        if (frente == NULL) {
-            frente = nuevo; //Si la cola esta vacia entonces nuevo va a ser el principio y el fin
-        }
-    }
-
-    void clonar(Cola ruta){
-        Cola aux;
-        aux = ruta;
-        agregar_colaCola(&aux);
-
-    };
-
+    
     void sacar_cola() {
         if (frente != NULL) { //Si el frente NO es nulo
             Nodo *aux = frente; //Creo un auxiliar al elemento
@@ -254,33 +237,37 @@ class Cola {
         }
     }
 
-    Dispositivo *quien_al_frente() {
-        return (frente!=NULL)? frente->dispositivo: NULL; //Me dice que dispositivo esta al frente de la cola
-    }
-    Cola *solucion_al_frente(){
-        return (frente!=NULL)? frente->Solu: NULL; //Me dice cual es la cola de relaciones que esta al frente.
-    }
+
 };
 
-Cola Soluciones;
-Cola Ruta;
+Cola Rutas;//Creo un arreglo para esta solucion
+
 
 void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispositivo* dedonde){
     cout<<"Comienzo back. Actual "<<actual->hostname<<"| Objetivo "<<objetivo->hostname<<"| inicio "<<inicio->hostname<<endl;
-    Ruta.agregar_dispCola(actual); //Agrego el actual a la cola de solucion
+    
+     
+    string *ruta_actual = Rutas.final->dispositivo; //Copio la direccion del arreglo de string actual
+    ruta_actual[Rutas.final->indice]=actual->hostname; //Guardo el nombre del dispositivo en la ruta actual (Usando el indice)
+    Rutas.final->indice++; //Incremento el indice
 
     Relacion *auxiliar=actual->lista_vecinos; //Establezco un auxiliar para recorrer a los vecinos
 
     while(auxiliar->con_quien!=NULL){ //Mientras que no llegue al final de los vecinos...
         if(auxiliar->con_quien==objetivo){ //Si llegue al objetivo chill
-            Ruta.agregar_dispCola(auxiliar->con_quien); //Agrego solucion
-            //Soluciones.clonar(Ruta); //Clono en la cola de soluciones
-            //desencolo todo de la ruta porque ya la almacene
-            while(Ruta.quien_al_frente()!=NULL){ //vacio la cola
-                cout<<"("<<Ruta.quien_al_frente()->hostname<<")"<<"->";
-                Ruta.sacar_cola();   
+            ruta_actual[Rutas.final->indice]=auxiliar->con_quien->hostname; //Guardo el nombre del dispositivo en la ruta actual (Usando el indice)
+            Rutas.final->indice++; //Incremento el indice
+            
+            for(int i=0;i<Rutas.final->indice;i++){
+                cout<<"("<<ruta_actual[i]<<")"<<"->";
             }
             cout<<endl;
+
+            Rutas.agregar_ruta(); //Creo una nueva ruta para almacenar
+            string *ruta_actual = Rutas.final->dispositivo;
+            ruta_actual[Rutas.final->indice]=inicio->hostname; //Preparo el apuntador a la ruta actual  
+            Rutas.final->indice++;
+            
             break;//salgo del bucle
         }
         else if (auxiliar->siguiente_R!=NULL){
@@ -290,12 +277,6 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
             break;
         }
     }
-
-    while(Ruta.quien_al_frente()!=NULL){
-        Ruta.sacar_cola();    
-    } //Liberamos la cola antes de hacer backtraking
-
-    Ruta.agregar_dispCola(actual); //Agrego de nuevo el dispositivo de donde estoy partiendo
     
     Relacion *aux=actual->lista_vecinos; //Creo un auxiliar para iterar en la lista de vecinos del actual
 
@@ -316,7 +297,7 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
 
 ///-------------------------------------------------------/// 
 int main (){
-    Dispositivo *lista = NULL;
+
     string name[14]={"a","b","c","d","e","f","g","h","i","k","l","m","n","o"};
     string dire[14]={"10","17","15","12","05","11","18","16","13","06","14","25","19","01"};
     for(int i=0; i<14; i++){
@@ -326,9 +307,14 @@ int main (){
     }
     establecer_conexion(1,"f","a","b",lista);
     establecer_conexion(2,"f","a","c",lista);
-    establecer_conexion(3,"f","a","g",lista);
-    establecer_conexion(4,"f","b","c",lista);
-    establecer_conexion(5,"f","c","g",lista);
+    establecer_conexion(3,"f","a","d",lista);
+    establecer_conexion(4,"f","a","e",lista);
+    establecer_conexion(5,"f","e","b",lista);
+    establecer_conexion(6,"f","e","c",lista);
+    establecer_conexion(7,"f","e","d",lista);
+    establecer_conexion(8,"f","d","c",lista);
+    establecer_conexion(9,"f","c","b",lista);
+    establecer_conexion(10,"f","b","g",lista);
 
     mostrarrelacion(buscardispositivo(lista,"a")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"b")->lista_vecinos);cout<<endl;
@@ -345,11 +331,13 @@ int main (){
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
+    Rutas.agregar_ruta();
     back(buscardispositivo(lista,"a"),buscardispositivo(lista,"g"),buscardispositivo(lista,"a"),buscardispositivo(lista,"a"));
     cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"b")->lista_vecinos);cout<<endl;
 
     mostrarlista(lista);
+    
 
     return 0;
 }
