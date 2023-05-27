@@ -212,7 +212,7 @@ class Cola {
     public:
 
     struct Nodo {
-        string *dispositivo;
+        string dispositivo[500];
         Nodo *siguiente;
         int indice;
     };
@@ -233,7 +233,7 @@ class Cola {
 
     void agregar_ruta() {
         Nodo *nuevo = new Nodo(); //Crea un nodo
-        nuevo->dispositivo=new string [500]; //Le asigna el apuntador al dispositivo
+        //nuevo->dispositivo=new string [500]; //Le asigna el apuntador al dispositivo
         nuevo->indice=0;
         nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
 
@@ -260,6 +260,7 @@ class Cola {
 
 };
 
+
 Cola Rutas;//Creo un arreglo para esta solucion
 
 
@@ -268,8 +269,11 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
     
      
     string *ruta_actual = Rutas.final->dispositivo;//Copio la direccion del arreglo de string actual
-    ruta_actual[Rutas.final->indice]=actual->hostname; //Guardo el nombre del dispositivo en la ruta actual (Usando el indice)
-    Rutas.final->indice++;//Incremento el indice
+    if(ruta_actual[Rutas.final->indice-1] != actual->hostname){
+        ruta_actual[Rutas.final->indice]=actual->hostname; //Guardo el nombre del dispositivo en la ruta actual (Usando el indice)
+        Rutas.final->indice++;//Incremento el indice
+    }
+        
 
     Relacion *auxiliar=actual->lista_vecinos; //Establezco un auxiliar para recorrer a los vecinos
 
@@ -284,9 +288,15 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
             cout<<endl;
 
             Rutas.agregar_ruta(); //Creo una nueva ruta para almacenar
+            string *aux1=ruta_actual;
             string *ruta_actual = Rutas.final->dispositivo;
+    
             ruta_actual[Rutas.final->indice]=inicio->hostname; //Preparo el apuntador a la ruta actual  
             Rutas.final->indice++;
+            if(ruta_actual[Rutas.final->indice-1] != actual->hostname){
+                ruta_actual[Rutas.final->indice]=actual->hostname; //Guardo el nombre del dispositivo en la ruta actual (Usando el indice)
+                Rutas.final->indice++;//Incremento el indice
+            }
             
             break;//salgo del bucle
         }
@@ -535,7 +545,7 @@ void Inicio(){
 ///-------------------------------------------------------///
 int main (){
     
-    /*string name[14]={"a","b","c","d","e","f","g","h","i","k","l","m","n","o"};
+    string name[14]={"a","b","c","d","e","f","g","h","i","k","l","m","n","o"};
     string dire[14]={"10","17","15","12","05","11","18","16","13","06","14","25","19","01"};
     for(int i=0; i<14; i++){
         //cout<<"Ingresa valor: \t"; 
@@ -543,14 +553,14 @@ int main (){
         insertar_dispositivo(name[i],dire[i]);
     }
     establecer_conexion(1,"f","a","b");
-    establecer_conexion(2,"f","a","c");
-    establecer_conexion(3,"f","a","d");
-    //establecer_conexion(4,"f","a","e");
+    establecer_conexion(2,"f","b","c");
+    establecer_conexion(3,"f","c","d");
+    establecer_conexion(4,"f","d","e");
     //establecer_conexion(5,"f","e","b");
     //establecer_conexion(6,"f","e","c",lista);
-    //establecer_conexion(7,"f","e","d",lista);
-    //establecer_conexion(8,"f","d","c",lista);
-    establecer_conexion(9,"f","c","b");
+    establecer_conexion(7,"f","a","g");
+    establecer_conexion(8,"f","f","g");
+    establecer_conexion(9,"f","e","f");
     establecer_conexion(10,"f","b","g");
 
     mostrarrelacion(buscardispositivo("a")->lista_vecinos);cout<<endl;
@@ -568,15 +578,15 @@ int main (){
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
-    /* buscarRutas(buscardispositivo("a"),buscardispositivo("g"));
+     buscarRutas(buscardispositivo("a"),buscardispositivo("g"));
     cout<<endl;
     mostrarrelacion(buscardispositivo("b")->lista_vecinos);cout<<endl;
 
-    mostrarlista();*/
+    //mostrarlista();
     
-    while(true){
+    /*while(true){
         M_inicio();
-    }
+    }*/
 
     return 0;
 }
