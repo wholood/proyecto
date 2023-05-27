@@ -288,7 +288,6 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
             cout<<endl;
 
             Rutas.agregar_ruta(); //Creo una nueva ruta para almacenar
-            string *aux1=ruta_actual;
             string *ruta_actual = Rutas.final->dispositivo;
     
             ruta_actual[Rutas.final->indice]=inicio->hostname; //Preparo el apuntador a la ruta actual  
