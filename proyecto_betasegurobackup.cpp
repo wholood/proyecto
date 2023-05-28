@@ -213,18 +213,16 @@ class Cola {
 
     struct Nodo {
         string dispositivo[500];
-        Nodo *siguiente;
         int indice;
+        Nodo *siguiente;
     };
     Nodo *frente;
     Nodo *final;
-    int aux_ping;
 
 
     Cola(){ //Constructor para la cola vacia
         frente=NULL; 
         final=NULL;
-        aux_ping=0;
     }
 
     bool vacia() { //Chequea si la cola no tiene elementos
@@ -292,10 +290,6 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
     
             ruta_actual[Rutas.final->indice]=inicio->hostname; //Preparo el apuntador a la ruta actual  
             Rutas.final->indice++;
-            if(ruta_actual[Rutas.final->indice-1] != actual->hostname){
-                ruta_actual[Rutas.final->indice]=actual->hostname; //Guardo el nombre del dispositivo en la ruta actual (Usando el indice)
-                Rutas.final->indice++;//Incremento el indice
-            }
             
             break;//salgo del bucle
         }
@@ -311,14 +305,14 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
 
     for(int i=1; i<=actual->cont_relacion;i++){
         
-        if(aux->con_quien != objetivo && !aux->check){
+        if(aux->con_quien != objetivo ){
             if(aux->con_quien == inicio || aux->con_quien == dedonde){
                 aux=aux->siguiente_R;
             }
             else{
                 cout<<actual->hostname<<"--"<<i<<endl;
 
-                aux->check=true;
+                //aux->check=true;
                 back(aux->con_quien,objetivo, inicio, actual);
                 
                 aux=aux->siguiente_R;
@@ -327,11 +321,11 @@ void back(Dispositivo *actual, Dispositivo *objetivo, Dispositivo *inicio, Dispo
         }
         
     }
-    aux=actual->lista_vecinos;
+    /*aux=actual->lista_vecinos;
     for(int i=1; i<=actual->cont_relacion;i++){
         aux->check=false;
         aux=aux->siguiente_R;
-    }
+    }*/
 
     return;
 };
@@ -552,15 +546,15 @@ int main (){
         insertar_dispositivo(name[i],dire[i]);
     }
     establecer_conexion(1,"f","a","b");
-    establecer_conexion(2,"f","b","c");
-    establecer_conexion(3,"f","c","d");
-    establecer_conexion(4,"f","d","e");
-    //establecer_conexion(5,"f","e","b");
-    //establecer_conexion(6,"f","e","c",lista);
-    establecer_conexion(7,"f","a","g");
-    establecer_conexion(8,"f","f","g");
-    establecer_conexion(9,"f","e","f");
-    establecer_conexion(10,"f","b","g");
+    establecer_conexion(1,"f","a","c");
+    establecer_conexion(1,"f","a","d");
+    establecer_conexion(1,"f","c","b");
+    establecer_conexion(1,"f","b","d");
+   // establecer_conexion(6,"f","c","e");
+    //establecer_conexion(7,"f","e","b");
+    //establecer_conexion(8,"f","a","e");
+    //establecer_conexion(9,"f","e","f");
+    //establecer_conexion(10,"f","b","g");
 
     mostrarrelacion(buscardispositivo("a")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo("b")->lista_vecinos);cout<<endl;
@@ -577,7 +571,7 @@ int main (){
     mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
     mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;*/
 
-     buscarRutas(buscardispositivo("a"),buscardispositivo("g"));
+     buscarRutas(buscardispositivo("a"),buscardispositivo("d"));
     cout<<endl;
     mostrarrelacion(buscardispositivo("b")->lista_vecinos);cout<<endl;
 

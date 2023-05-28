@@ -1,1 +1,1 @@
-aux->check=true;
+std

@@ -1,0 +1,11 @@
+4
+A 172
+B 234
+C 125
+D 124 
+5 
+A B Fibra 10
+A C Fibra 12
+A D Fibra 13
+C B Fibra 14
+B D Fibra 15
