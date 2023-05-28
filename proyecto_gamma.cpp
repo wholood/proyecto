@@ -159,7 +159,7 @@ bool establecer_conexion(int ping_1, string tipo_1, string h_1, string h_2){
     if (host1!=NULL && host2!=NULL && host1!=host2){//Mientras los apuntadores no sean nulos, si son nulos no existe el dispositivo
         if(verificar_relacion(host1,host2)){ //Verifica que no exista relacion entre ambos dispositivos
             if(host1->cont_relacion<12 && host2->cont_relacion<12){ //Verifica que tengan espacio para conexion
-                host1->conectar(ping_1,tipo_1,host2); //Establezco la relación en cada uno de los dispositivos
+                host1->conectar(ping_1,tipo_1,host2); //Establezco la relacion en cada uno de los dispositivos
                 host2->conectar(ping_1,tipo_1,host1);
                 return 1;    
             }
@@ -421,8 +421,8 @@ void buscarRutas(Dispositivo* origen, Dispositivo* objetivo) {
 ///-------------------------------------------------------/// 
 void M_agregar_info(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computación\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
-    cout<<"1.\t Agregar dispositivo.\n2.\t Agregar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicación."<<endl;
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<"1.\t Agregar dispositivo.\n2.\t Agregar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
     string hostname,ip;
     string h2,tipo;
 
@@ -430,7 +430,7 @@ void M_agregar_info(int &entrada){
     bool flag; //Indicador de error de las funciones
 
     while(true){
-        cout<<"Opción: ";
+        cout<<"Opcion: ";
         cin>>entrada;
         switch(entrada){
             case 1:
@@ -449,10 +449,10 @@ void M_agregar_info(int &entrada){
                 cin>>hostname>>h2>>ping>>tipo;
                 flag=establecer_conexion(ping,tipo,hostname,h2);
                 if(flag){
-                    cout<<"Se agregó una ruta entre "<<hostname<<" y "<<h2<<endl;    
+                    cout<<"Se agrego una ruta entre "<<hostname<<" y "<<h2<<endl;    
                 }
                 else{
-                    cout<<"No fue posible establecer la conexión\n"; 
+                    cout<<"No fue posible establecer la conexion\n"; 
                 }
                 break;
             case 3:
@@ -467,12 +467,12 @@ void M_agregar_info(int &entrada){
 
 void M_eliminar_info(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\nFacultad de Ciencias\nEscuela de Computación\nOrquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
-    cout<<"1.\t Eliminar dispositivo.\n2.\t Eliminar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicación."<<endl;
+    cout<<" Universidad central de venezuela\nFacultad de Ciencias\nEscuela de Computacion\nOrquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<"1.\t Eliminar dispositivo.\n2.\t Eliminar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
     string hostname;
 
     while(true){
-        cout<<"Opción: ";
+        cout<<"Opcion: ";
         cin>>entrada;
         switch(entrada){
         case 1:
@@ -501,14 +501,14 @@ void M_eliminar_info(int &entrada){
 
 void M_buscar_listar(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computación\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
-    cout<<"1.\t Consultar dispositivo.\n2.\t Listado de Dispositivos.\n3.\t Buscar ruta(1: 5G, 2: fibra óptica, 3: ambas).\n4.\t Dispositivos adyacentes.\n5.\t Volver a Principal.\n6.\t Salir de la aplicación."<<endl;
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<"1.\t Consultar dispositivo.\n2.\t Listado de Dispositivos.\n3.\t Buscar ruta(1: 5G, 2: fibra optica, 3: ambas).\n4.\t Dispositivos adyacentes.\n5.\t Volver a Principal.\n6.\t Salir de la aplicacion."<<endl;
     Dispositivo *buscado;
     string host_ip, h2, tipo;
     int aux=0;
 
     while(true){
-        cout<<"Opción: ";
+        cout<<"Opcion: ";
         cin>>entrada;        
         switch(entrada){
             case 1:
@@ -556,13 +556,13 @@ void M_buscar_listar(int &entrada){
 
 void M_respaldar(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computación\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
-    cout<<"1.\t Listado de dispositivos existentes.\n2.\t Listado de dispositivos eliminados.\n3.\t Listado de rutas eliminadas.\n4.\t Volver a Principal.\n5.\t Salir de la aplicación.";
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<"1.\t Listado de dispositivos existentes.\n2.\t Listado de dispositivos eliminados.\n3.\t Listado de rutas eliminadas.\n4.\t Volver a Principal.\n5.\t Salir de la aplicacion.";
     
     string host,ip;
 
     while(true){
-        cout<<"Opción: ";
+        cout<<"Opcion: ";
         cin>>entrada;
         switch(entrada){
             case 1: 
@@ -593,8 +593,8 @@ void M_respaldar(int &entrada){
 
 void M_inicio(){
     int entrada;
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computación\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
-    cout<<"1.\t Agregar información.\n2.\t Eliminar información.\n3.\t Buscar y listar.\n4.\t Mostrar respaldos.\n5.\t Créditos.\n6.\t Salir de la aplicación."<<endl;
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<"1.\t Agregar informacion.\n2.\t Eliminar informacion.\n3.\t Buscar y listar.\n4.\t Mostrar respaldos.\n5.\t Créditos.\n6.\t Salir de la aplicacion."<<endl;
     cin>>entrada;
 
     switch(entrada){
