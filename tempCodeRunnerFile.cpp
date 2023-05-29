@@ -1,1 +1,1 @@
-std
+void buscarRutas(Dispositivo*, Dispositivo*);

@@ -9,10 +9,11 @@ using namespace std;
 
 
 class Dispositivo; //Cabecera para que no se glichee
+int tipo_conexion_unaria(string h1, string h2);
+int get_ping(string h1, string h2);
 Dispositivo *lista = NULL;
-
 Dispositivo* buscardispositivo(string busqueda);
-
+void buscarRutas(Dispositivo* origen, Dispositivo* destino);
 ofstream EscRutas_Resp("rutas_resp.dat.txt"), EscDispositivos_resp("Dispositivos_resp.dat");
 ifstream LeeRutas_Resp("rutas_resp.dat.txt"), LeeDispositivos_resp("Dispositivos_resp.dat");
 //“Dispositivos.dat” 
@@ -73,11 +74,248 @@ class Dispositivo{
 
         nueva_Relacion->siguiente_R=aux1; //se cumple siempre.
         cont_relacion++; //Incremento el contador de relacion.
-
-        cout<<"Conexion establecida con "<<pana->hostname<<"."<<endl; //mensajito jiji
     };
+
+    void desconectar(Dispositivo *host){
+        Relacion  *aux= lista_vecinos ;
+        Relacion  *anterior=NULL;
+
+        while((aux!=NULL)&&(aux->con_quien != host)){
+            anterior = aux;
+            aux =aux->siguiente_R;
+        }
+
+        if(aux == NULL){
+            cout<<"<<Elemento no encontrado>>";
+        }
+
+        else if(anterior == NULL){
+            lista_vecinos =lista_vecinos->siguiente_R;
+            //respaldar_relacion(aux);
+            delete aux;
+        }
+        else{
+            anterior->siguiente_R = aux->siguiente_R;
+            //respaldar_relacion(aux);
+            delete aux;
+        }
+        //respaldar la relacion a borrar
+        //delete aux;
+    }
+};
+void Respaldar(string h1,string h2){
+    Dispositivo* Disp1 = buscardispositivo(h1);
+    Dispositivo* Disp2 = buscardispositivo(h2);
+
+    Relacion *actual = Disp1->lista_vecinos;
+
+    while(actual != NULL && actual->con_quien->hostname != h2){
+        actual = actual->siguiente_R;
+    }
+    if(actual!= NULL){
+        if(EscRutas_Resp.is_open()){
+            EscRutas_Resp<<h1<<" ";
+            EscRutas_Resp<<h2<<" ";
+            EscRutas_Resp<<actual->ping<<" ";
+            EscRutas_Resp<<actual->tipo<<endl;      
+        }
+        Disp1->desconectar(Disp2);
+        Disp2->desconectar(Disp1);
+    }    
+}
+
+
+class Cola {
+    public:
+
+    struct Nodo {
+        string dispositivo[500];
+        int indice;
+        Nodo *siguiente;
+        int tipo;
+        int ping_total;
+    };
+    Nodo *frente;
+    Nodo *final;
+
+
+    Cola(){ //Constructor para la cola vacia
+        frente=NULL; 
+        final=NULL;
+    }
+
+    bool vacia() { //Chequea si la cola no tiene elementos
+        return frente == NULL;
+    }
+
+    void agregar_ruta() {
+        Nodo *nuevo = new Nodo(); //Crea un nodo
+        nuevo->indice=0;
+        nuevo->ping_total = 0;
+        nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
+
+        if (final != NULL) {
+            final->siguiente = nuevo; //Añadimos a nuevo atras del ultimo de la cola
+        }
+        final = nuevo; //Nuevo será el final de la cola
+        if (frente == NULL) {
+            frente = nuevo; //Si la cola esta vacia entonces nuevo va a ser el principio y el fin
+        }
+    }
+    
+    void sacar_cola() {
+        if (frente != NULL) { //Si el frente NO es nulo
+            Nodo *aux = frente; //Creo un auxiliar al elemento
+            frente = frente->siguiente; //Establezco como primero al que iba atras del del frente
+            if (frente == NULL) { //Si solo estaba el elemento entonces todo es nulo
+                final = NULL;
+            }
+            delete aux; //Elimino el elemento
+        }
+    }
+
+    int imprimir_desencolar(int indicador){//1=fibra, 2=aereo
+        int f=0, a=0, m=0;
+        while(frente !=NULL){
+            if((indicador==1 && frente->tipo==1)||indicador==0){
+                for(int i=0; i<=frente->indice;i++){
+                    cout<<"("<<frente->dispositivo[i]<<") "<<"->";
+                }
+                cout<<"\t\tPing: "<<frente->ping_total<<endl;
+                f++;
+                m++;
+                sacar_cola();   
+            }
+            else if((indicador==2 && frente->tipo==2)||indicador==0){
+                for(int i=0; i<=frente->indice;i++){
+                    cout<<"("<<frente->dispositivo[i]<<") "<<"->";
+                }
+                cout<<"\t\tPing: "<<frente->ping_total<<endl;
+                a++;
+                m++;
+                sacar_cola();   
+            }else{
+                sacar_cola();  
+            }
+
+             
+        }
+        if(indicador==1) return f;
+        if(indicador==2) return a;
+        return m;
+    }
+
+    void imprimir(){
+        Nodo *aux = frente;
+        while(aux !=NULL){
+            for(int i=0; i<=aux->indice;i++){
+                cout<<"("<<aux->dispositivo[i]<<") "<<"->";
+            }
+            cout<<"\t\tPing: "<<aux->ping_total<<endl;
+            aux=aux->siguiente;   
+        }
+    }
+
+    void verificar_tipo(){
+        Nodo * auxiliar = frente;
+        while(auxiliar!=NULL){
+            int  f=0,a=0;
+            for(int i=0;i<auxiliar->indice;i++){
+                if(tipo_conexion_unaria(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1]) == 1){
+                    f++;
+                }else if(tipo_conexion_unaria(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1])== 2){
+                    a++;
+                }
+                auxiliar->ping_total+= get_ping(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1]);
+            }
+            if(f > 0 && a > 0){
+                auxiliar->tipo=0;
+            }else if(a == 0){
+                auxiliar->tipo=1;
+            }else{
+                auxiliar->tipo=2;
+            }
+            auxiliar = auxiliar->siguiente;
+        }           
+    }
+    int Eliminar(){
+        int cont=0;
+        while(frente!=NULL){
+            for(int i = 0; i <=frente->indice;i++){
+                Respaldar(frente->dispositivo[i],frente->dispositivo[i+1]);
+            }
+            cont++;
+            sacar_cola();
+        }
+        return cont;
+    }
+
 };
 
+Cola soluciones;
+
+class Pila{
+    public:
+    struct Nodo{
+        string Disp;
+        Nodo* Siguiente;
+    };
+
+    Nodo* StackPointer;
+
+
+    Pila(){
+       StackPointer = NULL;
+    };
+
+
+    void push(string subir){
+        Nodo *nuevo = new Nodo(); //Crea un nodo
+
+        nuevo->Disp=subir;
+        nuevo->Siguiente=StackPointer;
+
+        StackPointer=nuevo;
+    }   
+    void pop(){
+        Nodo *borrar = StackPointer;
+        StackPointer = borrar->Siguiente;
+
+        delete borrar;
+    }
+    bool Verificar(string Buscado){
+        Nodo* aux = StackPointer; 
+        while(aux != NULL){
+            if(aux->Disp == Buscado){
+                return true;
+            }
+            aux = aux->Siguiente;
+        }
+        return false;
+    }
+    void almacenar_solucion(string objetivo){
+        Nodo* aux = StackPointer;
+        soluciones.agregar_ruta();
+        string *arreglo = soluciones.final->dispositivo;
+
+        int i = 0;
+        while(aux != NULL){
+            aux = aux->Siguiente;
+            i++;
+        }
+        aux = StackPointer;
+        arreglo[i]=objetivo;
+
+        for(int j=i-1; j>=0; j--){
+            arreglo[j]=aux->Disp;
+            aux = aux->Siguiente;
+        }
+        soluciones.final->indice=i;
+    }
+    
+};
+
+Pila almacen; //Creo un arreglo para esta solucion
 
 ///--------------------------------------------------------///
 bool insertar_dispositivo(string nombre, string direccion){
@@ -102,7 +340,6 @@ bool insertar_dispositivo(string nombre, string direccion){
         }
 
         nuevo_Dispositivo->siguiente_D=aux1; //se cumple siempre.
-        cout<<"Valor ingresado "<<nombre<<"."<<endl;
         return 1;
     }
     return 0;
@@ -169,7 +406,21 @@ bool establecer_conexion(int ping_1, string tipo_1, string h_1, string h_2){
     return 0;
 };
 
-string tipo_conexion(string inicio, string busqueda){
+int tipo_conexion_unaria(string inicio, string busqueda){
+    Dispositivo *h1=buscardispositivo(inicio);
+    Dispositivo *h2= buscardispositivo(busqueda);
+    Relacion *actual = h1->lista_vecinos; //Auxiliar pa no romper nada
+
+    while ((actual !=NULL)&&(actual->con_quien!=h2)){ //Recorro la lista de relaciones del dispositivo mientras no consiga h2 hasta el final
+		actual = actual->siguiente_R;
+	}
+    if(actual->tipo=="Fibra"){
+        return 1;
+    }
+    return 2;
+}
+
+int get_ping(string inicio, string busqueda){
     Dispositivo *h1=buscardispositivo(inicio);
     Dispositivo *h2= buscardispositivo(busqueda);
     Relacion *actual = h1->lista_vecinos; //Auxiliar pa no romper nada
@@ -178,8 +429,7 @@ string tipo_conexion(string inicio, string busqueda){
 		actual = actual->siguiente_R;
 	}
 
-    return (actual->tipo);
-    
+    return (actual->ping);
 }
 ///-------------------------------------------------------///
 
@@ -202,196 +452,18 @@ void eliminarDispositivo (string nombre){
     }
 }
 
-void eliminarRelacion (Relacion *&listado, string nombre){//PPPPPPPPPPENDIENTEEEEEEEEEEEmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+void eliminarRelacion (string h1, string h2){//PPPPPPPPPPENDIENTEEEEEEEEEEEmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
     if(lista!=NULL){ //Por si acaso
-        Relacion  *aux_borrar ;//BUSCARRELACION
-        Relacion  *anterior = listado;
+        buscarRutas(buscardispositivo(h1),buscardispositivo(h2));
+        cout<<"Entre los dispositivos "<<h1<<" y "<<h2<<" se eliminaron las siguientes rutas: "<<endl;
+        soluciones.imprimir();
         
-        //Modificacion de la lista de relaciones del dispositivo
-        if(anterior==aux_borrar){
-            listado=aux_borrar->siguiente_R;
-        }
-        else{
-            while ((aux_borrar != NULL)&&(anterior->siguiente_R != aux_borrar)){
-                anterior=anterior->siguiente_R; //Voy recorriendo la lista siempre y cuando no consiga nada hasta el final (NULL)
-            }
-            anterior->siguiente_R=aux_borrar->siguiente_R;
-        }
-        //respaldar la relacion a borrar
-        delete aux_borrar;
+        cout<<"Total de rutas eliminadas : "<<soluciones.Eliminar()<<endl;
     }
 }
 
 ///-------------------------------------------------------/// BUSQUEDA DE RUTAS DIABOLICAS
-class Cola {
-    public:
 
-    struct Nodo {
-        string dispositivo[500];
-        int indice;
-        Nodo *siguiente;
-        string tipo;
-    };
-    Nodo *frente;
-    Nodo *final;
-
-
-    Cola(){ //Constructor para la cola vacia
-        frente=NULL; 
-        final=NULL;
-    }
-
-    bool vacia() { //Chequea si la cola no tiene elementos
-        return frente == NULL;
-    }
-
-    void agregar_ruta() {
-        Nodo *nuevo = new Nodo(); //Crea un nodo
-        nuevo->indice=0;
-        nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
-
-        if (final != NULL) {
-            final->siguiente = nuevo; //Añadimos a nuevo atras del ultimo de la cola
-        }
-        final = nuevo; //Nuevo será el final de la cola
-        if (frente == NULL) {
-            frente = nuevo; //Si la cola esta vacia entonces nuevo va a ser el principio y el fin
-        }
-    }
-    
-    void sacar_cola() {
-        if (frente != NULL) { //Si el frente NO es nulo
-            Nodo *aux = frente; //Creo un auxiliar al elemento
-            frente = frente->siguiente; //Establezco como primero al que iba atras del del frente
-            if (frente == NULL) { //Si solo estaba el elemento entonces todo es nulo
-                final = NULL;
-            }
-            delete aux; //Elimino el elemento
-        }
-    }
-
-    int imprimir(int indicador){//1=fibra, 2=aereo
-        int f=0, a=0, m=0;
-        while(frente !=NULL){
-            if(indicador==1 && frente->tipo=="Fibra"){
-                for(int i=0; i<=frente->indice;i++){
-                    cout<<"("<<frente->dispositivo[i]<<") "<<"->";
-                }
-                cout<<endl;
-                f++;
-                sacar_cola();   
-            }
-            else if(indicador==2 && frente->tipo=="Aereo"){
-                for(int i=0; i<=frente->indice;i++){
-                    cout<<"("<<frente->dispositivo[i]<<") "<<"->";
-                }
-                cout<<endl;
-                a++;
-                sacar_cola();   
-            }
-            else if(indicador==0){
-                for(int i=0; i<=frente->indice;i++){
-                    cout<<"("<<frente->dispositivo[i]<<") "<<"->";
-                }
-                cout<<endl;
-                m++;
-                sacar_cola();   
-            }
-                
-        }
-        if(indicador==1) return f;
-        if(indicador==2) return a;
-        return m;
-    }
-
-    void verificar_tipo(){
-        Nodo * auxiliar = frente;
-        while(auxiliar!=NULL){
-            int  f=0,a=0;
-            for(int i=0;i<auxiliar->indice;i++){
-                if(tipo_conexion(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1]) == "Fibra"){
-                    f++;
-                }else if(tipo_conexion(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1])== "Aereo"){
-                    a++;
-                }
-            }
-            if(f > 0 && a > 0){
-                auxiliar->tipo="Mixto";
-            }else if(a == 0){
-                auxiliar->tipo="Fibra";
-            }else{
-                auxiliar->tipo="Aereo";
-            }
-            auxiliar = auxiliar->siguiente;
-        }           
-    }
-};
-
-Cola soluciones;
-
-class Pila{
-    public:
-    struct Nodo{
-        string Disp;
-        Nodo* Siguiente;
-    };
-
-    Nodo* StackPointer;
-
-
-    Pila(){
-       StackPointer = NULL;
-    };
-
-
-    void push(string subir){
-        Nodo *nuevo = new Nodo(); //Crea un nodo
-
-        nuevo->Disp=subir;
-        nuevo->Siguiente=StackPointer;
-
-        StackPointer=nuevo;
-    }   
-    void pop(){
-        Nodo *borrar = StackPointer;
-        StackPointer = borrar->Siguiente;
-
-        delete borrar;
-    }
-    bool Verificar(string Buscado){
-        Nodo* aux = StackPointer; 
-        while(aux != NULL){
-            if(aux->Disp == Buscado){
-                return true;
-            }
-            aux = aux->Siguiente;
-        }
-        return false;
-    }
-    void almacenar_solucion(string objetivo){
-        Nodo* aux = StackPointer;
-        soluciones.agregar_ruta();
-        string *arreglo = soluciones.final->dispositivo;
-
-        int i = 0;
-        while(aux != NULL){
-            aux = aux->Siguiente;
-            i++;
-        }
-        aux = StackPointer;
-        arreglo[i]=objetivo;
-
-        for(int j=i-1; j>=0; j--){
-            arreglo[j]=aux->Disp;
-            aux = aux->Siguiente;
-        }
-        soluciones.final->indice=i;
-    }
-    
-};
-
-
-Pila almacen; //Creo un arreglo para esta solucion
 
 void Back(Dispositivo *Actual, Dispositivo *Objetivo){
 
@@ -421,7 +493,7 @@ void buscarRutas(Dispositivo* origen, Dispositivo* objetivo) {
 ///-------------------------------------------------------/// 
 void M_agregar_info(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Agregar dispositivo.\n2.\t Agregar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
     string hostname,ip;
     string h2,tipo;
@@ -467,9 +539,9 @@ void M_agregar_info(int &entrada){
 
 void M_eliminar_info(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\nFacultad de Ciencias\nEscuela de Computacion\nOrquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<" Universidad central de venezuela\nFacultad de Ciencias\nEscuela de Computacion\nOrquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Eliminar dispositivo.\n2.\t Eliminar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
-    string hostname;
+    string hostname,host2;
 
     while(true){
         cout<<"Opcion: ";
@@ -488,7 +560,9 @@ void M_eliminar_info(int &entrada){
 
             break;
         case 2:
-            //---------Eliminar Ruta------//
+            cout<<"Ingrese los nombres o ip de los dispositivos: ";
+            cin>>hostname>>host2;
+            eliminarRelacion(hostname,host2);
             break;
         case 3:
             return;
@@ -501,7 +575,7 @@ void M_eliminar_info(int &entrada){
 
 void M_buscar_listar(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Consultar dispositivo.\n2.\t Listado de Dispositivos.\n3.\t Buscar ruta(1: 5G, 2: fibra optica, 3: ambas).\n4.\t Dispositivos adyacentes.\n5.\t Volver a Principal.\n6.\t Salir de la aplicacion."<<endl;
     Dispositivo *buscado;
     string host_ip, h2, tipo;
@@ -515,7 +589,13 @@ void M_buscar_listar(int &entrada){
                 cout<<"Ingrese Hostname o IP"<<endl;
                 cin>>host_ip;
                 buscado=buscardispositivo(host_ip);
-                cout<<buscado->hostname<<", "<<buscado->ip<<endl;
+                if(buscado != NULL){
+                    cout<<buscado->hostname<<", "<<buscado->ip<<endl;  
+                }
+                else{
+                    cout<<"El dispositivo indicado no existe";
+                }
+                
                 break;
             case 2:
                 mostrarlista();
@@ -528,15 +608,15 @@ void M_buscar_listar(int &entrada){
                 cin>>tipo;
                 
                 if(tipo=="Fibra" || tipo=="FibraOptica" || tipo=="fibra"){
-                    aux=soluciones.imprimir(1);
+                    aux=soluciones.imprimir_desencolar(1);
                     cout<<"numero de rutas encontradas: "<<aux<<endl;
                 }
                 else if (tipo=="5G" || tipo=="5g" || tipo=="Aereo" || tipo=="aereo"){
-                    aux=soluciones.imprimir(2);
+                    aux=soluciones.imprimir_desencolar(2);
                     cout<<"numero de rutas encontradas: "<<aux<<endl;
                 }
                 else{
-                    aux=soluciones.imprimir(0);
+                    aux=soluciones.imprimir_desencolar(0);
                     cout<<"numero de rutas encontradas: "<<aux<<endl;
                 }
                 break;
@@ -556,7 +636,7 @@ void M_buscar_listar(int &entrada){
 
 void M_respaldar(int &entrada){
     system("cls");
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Listado de dispositivos existentes.\n2.\t Listado de dispositivos eliminados.\n3.\t Listado de rutas eliminadas.\n4.\t Volver a Principal.\n5.\t Salir de la aplicacion.";
     
     string host,ip;
@@ -593,8 +673,8 @@ void M_respaldar(int &entrada){
 
 void M_inicio(){
     int entrada;
-    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenú de opciones:"<<endl;
-    cout<<"1.\t Agregar informacion.\n2.\t Eliminar informacion.\n3.\t Buscar y listar.\n4.\t Mostrar respaldos.\n5.\t Créditos.\n6.\t Salir de la aplicacion."<<endl;
+    cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
+    cout<<"1.\t Agregar informacion.\n2.\t Eliminar informacion.\n3.\t Buscar y listar.\n4.\t Mostrar respaldos.\n5.\t Creditos.\n6.\t Salir de la aplicacion."<<endl;
     cin>>entrada;
 
     switch(entrada){
@@ -692,8 +772,9 @@ int main (){
 */
     Inicio();
 
+
     while(true){
-        M_inicio();
+       M_inicio();
     }
 
     return 0;
