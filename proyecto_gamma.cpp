@@ -5,22 +5,19 @@
 #include<windows.h>//funciona para el clear
 
 using namespace std;
-
-
-
+//-----------Cabeceras-----------------//
 class Dispositivo; //Cabecera para que no se glichee
 int tipo_conexion_unaria(string h1, string h2);
-int get_ping(string h1, string h2);
-Dispositivo *lista = NULL;
+int obtener_ping(string h1, string h2);
+void Respaldar_Rutas(string h1, string h2);
 Dispositivo* buscardispositivo(string busqueda);
 void buscarRutas(Dispositivo* origen, Dispositivo* destino);
-ofstream EscRutas_Resp("rutas_resp.dat.txt"), EscDispositivos_resp("Dispositivos_resp.dat");
-ifstream LeeRutas_Resp("rutas_resp.dat.txt"), LeeDispositivos_resp("Dispositivos_resp.dat");
-//“Dispositivos.dat” 
-//rutas_resp.dat
-//Dispositivos_resp.dat
+string rut_resp = "rutas_resp.dat",Disp_resp ="Dispositivos_resp.dat";
+fstream Rutas_resp(rut_resp,ios::in | ios:: out);
+fstream Dispositivo_resp(Disp_resp, ios::in | ios:: out);
+//-----------------------///
 
-
+Dispositivo *lista = NULL;
 class Relacion{
     public: 
     int ping;
@@ -91,40 +88,18 @@ class Dispositivo{
 
         else if(anterior == NULL){
             lista_vecinos =lista_vecinos->siguiente_R;
-            //respaldar_relacion(aux);
+            //Respaldar_Rutas_relacion(aux);
             delete aux;
         }
         else{
             anterior->siguiente_R = aux->siguiente_R;
-            //respaldar_relacion(aux);
+            //Respaldar_Rutas_relacion(aux);
             delete aux;
         }
-        //respaldar la relacion a borrar
+        //Respaldar_Rutas la relacion a borrar
         //delete aux;
     }
 };
-void Respaldar(string h1,string h2){
-    Dispositivo* Disp1 = buscardispositivo(h1);
-    Dispositivo* Disp2 = buscardispositivo(h2);
-
-    Relacion *actual = Disp1->lista_vecinos;
-
-    while(actual != NULL && actual->con_quien->hostname != h2){
-        actual = actual->siguiente_R;
-    }
-    if(actual!= NULL){
-        if(EscRutas_Resp.is_open()){
-            EscRutas_Resp<<h1<<" ";
-            EscRutas_Resp<<h2<<" ";
-            EscRutas_Resp<<actual->ping<<" ";
-            EscRutas_Resp<<actual->tipo<<endl;      
-        }
-        Disp1->desconectar(Disp2);
-        Disp2->desconectar(Disp1);
-    }    
-}
-
-
 class Cola {
     public:
 
@@ -134,6 +109,7 @@ class Cola {
         Nodo *siguiente;
         int tipo;
         int ping_total;
+        int salto;
     };
     Nodo *frente;
     Nodo *final;
@@ -152,6 +128,7 @@ class Cola {
         Nodo *nuevo = new Nodo(); //Crea un nodo
         nuevo->indice=0;
         nuevo->ping_total = 0;
+    
         nuevo->siguiente=NULL; //Establece como null el siguiente (fin de cola)
 
         if (final != NULL) {
@@ -181,7 +158,8 @@ class Cola {
                 for(int i=0; i<=frente->indice;i++){
                     cout<<"("<<frente->dispositivo[i]<<") "<<"->";
                 }
-                cout<<"\t\tPing: "<<frente->ping_total<<endl;
+                cout<<"\tPing: "<<frente->ping_total;
+                cout<<"\tSaltos: "<<frente->indice<<endl;
                 f++;
                 m++;
                 sacar_cola();   
@@ -190,7 +168,8 @@ class Cola {
                 for(int i=0; i<=frente->indice;i++){
                     cout<<"("<<frente->dispositivo[i]<<") "<<"->";
                 }
-                cout<<"\t\tPing: "<<frente->ping_total<<endl;
+                cout<<"\tPing: "<<frente->ping_total;
+                cout<<"\tSaltos: "<<frente->indice<<endl;
                 a++;
                 m++;
                 sacar_cola();   
@@ -226,7 +205,7 @@ class Cola {
                 }else if(tipo_conexion_unaria(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1])== 2){
                     a++;
                 }
-                auxiliar->ping_total+= get_ping(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1]);
+                auxiliar->ping_total+= obtener_ping(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1]);
             }
             if(f > 0 && a > 0){
                 auxiliar->tipo=0;
@@ -242,7 +221,7 @@ class Cola {
         int cont=0;
         while(frente!=NULL){
             for(int i = 0; i <=frente->indice;i++){
-                Respaldar(frente->dispositivo[i],frente->dispositivo[i+1]);
+                Respaldar_Rutas(frente->dispositivo[i],frente->dispositivo[i+1]);
             }
             cont++;
             sacar_cola();
@@ -317,7 +296,51 @@ class Pila{
 
 Pila almacen; //Creo un arreglo para esta solucion
 
-///--------------------------------------------------------///
+//------------------------------------------------------------//Respaldos
+
+void Respaldar_Rutas(string h1,string h2){
+    Dispositivo* Disp1 = buscardispositivo(h1);
+    Dispositivo* Disp2 = buscardispositivo(h2);
+
+    Relacion *actual = Disp1->lista_vecinos;
+
+    while(actual != NULL && actual->con_quien->hostname != h2){
+        actual = actual->siguiente_R;
+    }
+    if(actual!= NULL){
+        if(Rutas_resp.is_open()){
+            Rutas_resp<<h1<<" ";
+            Rutas_resp<<h2<<" ";
+            Rutas_resp<<actual->ping<<" ";
+            Rutas_resp<<actual->tipo<<endl;      
+        }
+        Disp1->desconectar(Disp2);
+        Disp2->desconectar(Disp1);
+    } 
+}
+void Respaldar_Dispositivo(Dispositivo* Disp1){
+    Relacion *actual = Disp1->lista_vecinos;
+
+    if(Dispositivo_resp.is_open()){
+        Dispositivo_resp<<Disp1->hostname<<" ";
+        Dispositivo_resp<<Disp1->ip<<endl;            
+    }
+    while(actual != NULL){
+        if(Rutas_resp.is_open()){
+            Rutas_resp<<Disp1->hostname<<" ";
+            Rutas_resp<<actual->con_quien->hostname<<" ";
+            Rutas_resp<<actual->ping<<" ";
+            Rutas_resp<<actual->tipo<<endl;      
+        }
+        Disp1->desconectar(actual->con_quien);
+        actual->con_quien->desconectar(Disp1);
+
+        actual = actual->siguiente_R;
+    }
+
+       
+}
+///--------------------------------------------------------///Funciones lista
 bool insertar_dispositivo(string nombre, string direccion){
     if(buscardispositivo(nombre)==NULL){
         Dispositivo *nuevo_Dispositivo = new Dispositivo();
@@ -356,6 +379,7 @@ void mostrarlista(){
         i++;
     }
 };
+
 void mostrarrelacion(Relacion *listado){
     Relacion *actual = listado;
     //actual = lista;
@@ -420,7 +444,7 @@ int tipo_conexion_unaria(string inicio, string busqueda){
     return 2;
 }
 
-int get_ping(string inicio, string busqueda){
+int obtener_ping(string inicio, string busqueda){
     Dispositivo *h1=buscardispositivo(inicio);
     Dispositivo *h2= buscardispositivo(busqueda);
     Relacion *actual = h1->lista_vecinos; //Auxiliar pa no romper nada
@@ -431,7 +455,7 @@ int get_ping(string inicio, string busqueda){
 
     return (actual->ping);
 }
-///-------------------------------------------------------///
+///-------------------------------------------------------///Seccion de delete
 
 void eliminarDispositivo (string nombre){
     if(lista!=NULL){ //Por si acaso
@@ -447,12 +471,12 @@ void eliminarDispositivo (string nombre){
             }
             anterior->siguiente_D=aux_borrar->siguiente_D;
         }
-        //respaldar el dispositivo a borrar
+        Respaldar_Dispositivo(aux_borrar);
         delete aux_borrar;
     }
 }
 
-void eliminarRelacion (string h1, string h2){//PPPPPPPPPPENDIENTEEEEEEEEEEEmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+void eliminarRelacion (string h1, string h2){
     if(lista!=NULL){ //Por si acaso
         buscarRutas(buscardispositivo(h1),buscardispositivo(h2));
         cout<<"Entre los dispositivos "<<h1<<" y "<<h2<<" se eliminaron las siguientes rutas: "<<endl;
@@ -488,10 +512,9 @@ void buscarRutas(Dispositivo* origen, Dispositivo* objetivo) {
     Back(origen,objetivo);
     soluciones.verificar_tipo();
 }
-//----------------------------------------------------// Refinamiento de soluciones---------------
 
-///-------------------------------------------------------/// 
-void M_agregar_info(int &entrada){
+///-------------------------------------------------------/// MENU 
+void M_agregar_info(char &entrada){
     system("cls");
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Agregar dispositivo.\n2.\t Agregar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
@@ -505,7 +528,7 @@ void M_agregar_info(int &entrada){
         cout<<"Opcion: ";
         cin>>entrada;
         switch(entrada){
-            case 1:
+            case '1':
                 cout<<"Ingresa el hostname seguido de la ip: "<<endl;
                 cin>>hostname>>ip;
                 flag=insertar_dispositivo(hostname,ip);
@@ -516,7 +539,7 @@ void M_agregar_info(int &entrada){
                     cout<<"El dispositivo "<<hostname<<" ya existe en el sistema. No fue agregado\n"; 
                 }
                 break;
-            case 2:
+            case '2':
                 cout<<"Ingresa el hostname1, hostname2, ping, tipo: "<<endl;
                 cin>>hostname>>h2>>ping>>tipo;
                 flag=establecer_conexion(ping,tipo,hostname,h2);
@@ -527,17 +550,19 @@ void M_agregar_info(int &entrada){
                     cout<<"No fue posible establecer la conexion\n"; 
                 }
                 break;
-            case 3:
+            case '3':
                 return;
-            case 4:
+            case '4':
                 exit(0);
-
+            default:
+                cout<<"Opcion invalida"<<endl;
+                break;
         }    
     }
     
 };
 
-void M_eliminar_info(int &entrada){
+void M_eliminar_info(char &entrada){
     system("cls");
     cout<<" Universidad central de venezuela\nFacultad de Ciencias\nEscuela de Computacion\nOrquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Eliminar dispositivo.\n2.\t Eliminar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
@@ -547,45 +572,47 @@ void M_eliminar_info(int &entrada){
         cout<<"Opcion: ";
         cin>>entrada;
         switch(entrada){
-        case 1:
+        case '1':
+            cout<<"Ingrese el hostname o ip del dispositivo a eliminar"<<endl;
             cin>>hostname;
             if(buscardispositivo(hostname)== NULL){
                 cout<<"El dispositivo "<<hostname<<" No existe en el sistema\n";
                 break;
             }
-            // -------Respaldar-----------//
-            //                            //
-            //---------Eliminar-----------//
-
-
+            eliminarDispositivo(hostname);
+            cout<<"El dispositivo "<<hostname<<" fue eliminado del sistema."<<endl;
             break;
-        case 2:
+        case '2':
             cout<<"Ingrese los nombres o ip de los dispositivos: ";
             cin>>hostname>>host2;
             eliminarRelacion(hostname,host2);
             break;
-        case 3:
+        case '3':
             return;
-        case 4:
+        case '4':
             exit(0);
-    }    
+        default:
+            cout<<"Opcion invalida"<<endl;
+            break;
+        }    
     }
     
 };
 
-void M_buscar_listar(int &entrada){
+void M_buscar_listar(char &entrada){
     system("cls");
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Consultar dispositivo.\n2.\t Listado de Dispositivos.\n3.\t Buscar ruta(1: 5G, 2: fibra optica, 3: ambas).\n4.\t Dispositivos adyacentes.\n5.\t Volver a Principal.\n6.\t Salir de la aplicacion."<<endl;
     Dispositivo *buscado;
-    string host_ip, h2, tipo;
+    string host_ip, h2; 
+    int tipo;
     int aux=0;
 
     while(true){
         cout<<"Opcion: ";
         cin>>entrada;        
         switch(entrada){
-            case 1:
+            case '1':
                 cout<<"Ingrese Hostname o IP"<<endl;
                 cin>>host_ip;
                 buscado=buscardispositivo(host_ip);
@@ -597,74 +624,122 @@ void M_buscar_listar(int &entrada){
                 }
                 
                 break;
-            case 2:
+            case '2':
                 mostrarlista();
                 break;
-            case 3:
+            case '3':
                 cout<<"Ingrese los identificadores:"<<endl;
                 cin>>host_ip>>h2;
                 buscarRutas(buscardispositivo(host_ip),buscardispositivo(h2));
-                cout<<"Ingrese el tipo de ruta que desea:"<<endl;
+                cout<<"Ingrese el tipo de ruta que desea: (1: 5G, 2: fibra optica, 3: ambas)"<<endl;
                 cin>>tipo;
                 
-                if(tipo=="Fibra" || tipo=="FibraOptica" || tipo=="fibra"){
+                if(tipo==1){
                     aux=soluciones.imprimir_desencolar(1);
                     cout<<"numero de rutas encontradas: "<<aux<<endl;
                 }
-                else if (tipo=="5G" || tipo=="5g" || tipo=="Aereo" || tipo=="aereo"){
+                else if (tipo==2){
                     aux=soluciones.imprimir_desencolar(2);
                     cout<<"numero de rutas encontradas: "<<aux<<endl;
                 }
-                else{
+                else if (tipo==3){
                     aux=soluciones.imprimir_desencolar(0);
                     cout<<"numero de rutas encontradas: "<<aux<<endl;
                 }
+                else{
+                    cout<<"Numero invalido "<<endl;
+                }
                 break;
-            case 4:
+            case '4':
                 cout<<"Ingresa el hostname o ip: "<<endl;
                 cin>>host_ip;
                 mostrarrelacion(buscardispositivo(host_ip)->lista_vecinos);
                 break;
-            case 5:
+            case '5':
                 return;
-            case 6:
+            case '6':
                 exit(0);
+            default:
+                cout<<"Opcion invalida"<<endl;
+                break;
         }
     }
         
 };
 
-void M_respaldar(int &entrada){
+void M_Respaldar_Rutas(char &entrada){
     system("cls");
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
-    cout<<"1.\t Listado de dispositivos existentes.\n2.\t Listado de dispositivos eliminados.\n3.\t Listado de rutas eliminadas.\n4.\t Volver a Principal.\n5.\t Salir de la aplicacion.";
+    cout<<"1.\t Listado de dispositivos existentes.\n2.\t Listado de dispositivos eliminados.\n3.\t Listado de rutas eliminadas.\n4.\t Volver a Principal.\n5.\t Salir de la aplicacion."<<endl;
     
     string host,ip;
 
     while(true){
         cout<<"Opcion: ";
         cin>>entrada;
+        ifstream Entrada_2("Dispositivo.dat");
+        Dispositivo_resp.close();
+        Dispositivo_resp.open(Disp_resp);
+        Rutas_resp.close();
+        Rutas_resp.open(rut_resp);
+
         switch(entrada){
-            case 1: 
-                mostrarlista();
-                break;
-            case 2:
-                //Muestra el contenido del archivo de respaldo Dispositivo_resp.dat
-                if(LeeDispositivos_resp.is_open()){
-                    while(LeeDispositivos_resp.eof()){
-                        LeeDispositivos_resp>>host;
-                        LeeDispositivos_resp>>ip;
-                        cout<< host <<", "<< ip<< endl;
-                    } 
+            case '1': 
+                cout<<"Los dispositivos almacenados en el archivo Dispositivos.dat son: "<<endl;
+                if(Entrada_2.is_open()){
+                    int Dis = 0, Rel = 0, ping = 0;
+                    string aux1,aux2,aux3;
+                    Entrada_2>>Dis;
+                    for(int i = 0; i < Dis; i++){
+                        Entrada_2>>aux1;//Host
+                        Entrada_2>>aux2;//ip
+                        cout<<aux1<<" "<<aux2<<endl;
+                    }
+                    Entrada_2>>Rel;
+                    for(int i = 0; i < Rel; i++){
+                        Entrada_2>>aux1;//host1
+                        Entrada_2>>aux2;//host2
+                        Entrada_2>>aux3;//tipo
+                        Entrada_2>>ping;//ping
+                    }
                 }
                 break;
-            case 3:
-                
+            case '2':
+                cout<<"Los dispositivos eliminados almacenados en el archivo Dispositivos_resp.dat son: "<<endl;
+                //Muestra el contenido del archivo de respaldo Dispositivo_resp.dat
+                if(Dispositivo_resp.is_open()){
+                    do{
+                        Dispositivo_resp>>host;
+                        Dispositivo_resp>>ip;
+                        cout<< host <<" "<< ip<< endl;
+                        host =" "; ip=" ";
+                    }while(!Dispositivo_resp.eof());
+                        
+                    
+                }
                 break;
-            case 4:
+            case '3':
+                cout<<"Las rutas eliminadas almacenadas en el archivo Rutas_resp.dat son: "<<endl;
+                if(Rutas_resp.is_open()){
+                    do{
+                        Rutas_resp>>host;
+                        cout<<host<<" ";
+                        Rutas_resp>>host;
+                        cout<<host<<" ";
+                        Rutas_resp>>host;
+                        Rutas_resp>>ip;
+                        cout<<host<<" "<<ip<<endl;
+                        host=" ", ip = " ";
+                    }while(!Rutas_resp.eof());
+                }                
+                break;
+            case '4':               
                 return;
-            case 5:
+            case '5':
                 exit(0);
+            default:
+            cout<<"Opcion invalida"<<endl;
+            break;
         }    
     }
     
@@ -672,37 +747,40 @@ void M_respaldar(int &entrada){
 };
 
 void M_inicio(){
-    int entrada;
+    char entrada;
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Agregar informacion.\n2.\t Eliminar informacion.\n3.\t Buscar y listar.\n4.\t Mostrar respaldos.\n5.\t Creditos.\n6.\t Salir de la aplicacion."<<endl;
     cin>>entrada;
 
     switch(entrada){
-        case 1:
+        case '1':
             M_agregar_info(entrada);
             break;
-        case 2:
+        case '2':
             M_eliminar_info(entrada);
             break;
-        case 3:
+        case '3':
             M_buscar_listar(entrada);
             break;
-        case 4:
-            M_respaldar(entrada);
+        case '4':
+            M_Respaldar_Rutas(entrada);
             break;
-        case 5:
+        case '5':
             cout<<endl<<endl<<"---------"<<endl;
             cout<<"Carlos Cao \tC.I. 28.655.925\nErimar Reis \tC.I. 29.743.464\n";
             cout<<endl<<endl<<"---------"<<endl;
             break;
-        case 6:
+        case '6':
             exit(0);
+        default:
+            cout<<"Opcion invalida"<<endl;
+            break;
     }
 };
 
 void Inicio(){
-    ifstream Entrada("Dispositivo.dat.txt");
     
+    ifstream Entrada("Dispositivo.dat");
     if(Entrada.is_open()){
         int Dis = 0, Rel = 0, ping = 0;
         string aux1,aux2,aux3;
