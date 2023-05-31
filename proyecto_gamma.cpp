@@ -98,6 +98,7 @@ class Dispositivo{
         }
         //Respaldar_Rutas la relacion a borrar
         //delete aux;
+        cont_relacion--;
     }
 };
 class Cola {
@@ -678,11 +679,8 @@ void M_Respaldar_Rutas(char &entrada){
         cout<<"Opcion: ";
         cin>>entrada;
         ifstream Entrada_2("Dispositivo.dat");
-        Dispositivo_resp.close();
-        Dispositivo_resp.open(Disp_resp);
-        Rutas_resp.close();
-        Rutas_resp.open(rut_resp);
-
+        Dispositivo_resp.seekg(0);
+        Rutas_resp.seekg(0);
         switch(entrada){
             case '1': 
                 cout<<"Los dispositivos almacenados en el archivo Dispositivos.dat son: "<<endl;
