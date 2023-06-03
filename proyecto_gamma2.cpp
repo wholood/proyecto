@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string.h>
+#include <string>
 #include<fstream>
 #include<cstdlib>//funcion para el exit
 #include<windows.h>//funciona para el clear
