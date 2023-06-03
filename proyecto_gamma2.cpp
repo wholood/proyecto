@@ -159,20 +159,30 @@ class Cola {
         while(frente !=NULL){
             if((indicador==1 && frente->tipo==1)||indicador==0){
                 for(int i=0; i<=frente->indice;i++){
-                    cout<<"("<<frente->dispositivo[i]<<") "<<"->";
+                    cout<<frente->dispositivo[i]<<", ";
+                    Salidas<<frente->dispositivo[i]<<", ";
                 }
                 cout<<"\tPing: "<<frente->ping_total;
                 cout<<"\tSaltos: "<<frente->indice<<endl;
+
+                Salidas<<"Ping: "<<frente->ping_total<<", ";
+                Salidas<<"Saltos: "<<frente->indice<<", ";
+                Salidas<<"5G"<<endl;
                 f++;
                 m++;
                 sacar_cola();   
             }
             else if((indicador==2 && frente->tipo==2)||indicador==0){
                 for(int i=0; i<=frente->indice;i++){
-                    cout<<"("<<frente->dispositivo[i]<<") "<<"->";
+                    cout<<frente->dispositivo[i]<<", ";
+                    Salidas<<frente->dispositivo[i]<<", ";
+                
                 }
                 cout<<"\tPing: "<<frente->ping_total;
                 cout<<"\tSaltos: "<<frente->indice<<endl;
+                Salidas<<"Ping: "<<frente->ping_total<<", ";
+                Salidas<<"Saltos: "<<frente->indice<<", ";
+                Salidas<<"Fibra"<<endl;
                 a++;
                 m++;
                 sacar_cola();   
@@ -191,9 +201,10 @@ class Cola {
         Nodo *aux = frente;
         while(aux !=NULL){
             for(int i=0; i<=aux->indice;i++){
-                cout<<"("<<aux->dispositivo[i]<<") "<<"->";
+                cout<<aux->dispositivo[i]<<", ";
             }
-            cout<<"\t\tPing: "<<aux->ping_total<<endl;
+            cout<<"\tPing: "<<aux->ping_total<<endl;
+            cout<<"\tSaltos: "<<frente->indice<<endl;
             aux=aux->siguiente;   
         }
     }

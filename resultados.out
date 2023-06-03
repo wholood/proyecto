@@ -1,6 +1,4 @@
 0
-1
-0
--2
--3
--1
+A, B, D, Ping:25, Saltos: 2, 5G
+A, C, B, D, Ping:41, Saltos: 3, 5G
+A, D, Ping:13, Saltos: 1, 5G
