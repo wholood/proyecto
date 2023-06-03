@@ -154,46 +154,23 @@ class Cola {
         }
     }
 
-    int imprimir_desencolar(int indicador){//1=fibra, 2=aereo
-        int f=0, a=0, m=0;
-        while(frente !=NULL){
-            if((indicador==1 && frente->tipo==1)||indicador==0){
-                for(int i=0; i<=frente->indice;i++){
-                    cout<<frente->dispositivo[i]<<", ";
-                    Salidas<<frente->dispositivo[i]<<", ";
-                }
-                cout<<"\tPing: "<<frente->ping_total;
-                cout<<"\tSaltos: "<<frente->indice<<endl;
-
-                Salidas<<"Ping: "<<frente->ping_total<<", ";
-                Salidas<<"Saltos: "<<frente->indice<<", ";
-                Salidas<<"5G"<<endl;
-                f++;
-                m++;
-                sacar_cola();   
+    int imprimir_desencolar(){//1=fibra, 2=aereo
+        int m=0;
+        while(frente !=NULL){           
+            for(int i=0; i<=frente->indice;i++){
+                cout<<frente->dispositivo[i]<<", ";
+                Salidas<<frente->dispositivo[i]<<", ";
             }
-            else if((indicador==2 && frente->tipo==2)||indicador==0){
-                for(int i=0; i<=frente->indice;i++){
-                    cout<<frente->dispositivo[i]<<", ";
-                    Salidas<<frente->dispositivo[i]<<", ";
-                
-                }
-                cout<<"\tPing: "<<frente->ping_total;
-                cout<<"\tSaltos: "<<frente->indice<<endl;
-                Salidas<<"Ping: "<<frente->ping_total<<", ";
-                Salidas<<"Saltos: "<<frente->indice<<", ";
-                Salidas<<"Fibra"<<endl;
-                a++;
-                m++;
-                sacar_cola();   
-            }else{
-                sacar_cola();  
-            }
+            cout<<"\tPing: "<<frente->ping_total;
+            cout<<"\tSaltos: "<<frente->indice;
+            cout<<"\tTipo: "<<frente->tipo<<endl;
 
-             
+            Salidas<<"Ping: "<<frente->ping_total<<", ";
+            Salidas<<"Saltos: "<<frente->indice<<", ";
+            Salidas<<"Tipo: "<<frente->tipo<<endl;        
+            m++;
+            sacar_cola();                
         }
-        if(indicador==1) return f;
-        if(indicador==2) return a;
         return m;
     }
 
@@ -222,7 +199,7 @@ class Cola {
                 auxiliar->ping_total+= obtener_ping(auxiliar->dispositivo[i],auxiliar->dispositivo[i+1]);
             }
             if(f > 0 && a > 0){
-                auxiliar->tipo=0;
+                auxiliar->tipo=3;
             }else if(a == 0){
                 auxiliar->tipo=1;
             }else{
@@ -732,24 +709,9 @@ void M_buscar_listar(char &entrada){
                 cout<<"Ingrese los identificadores:"<<endl;
                 cin>>host_ip>>h2;
                 buscarRutas(host_ip,h2);
-                cout<<"Ingrese el tipo de ruta que desea: (1: 5G, 2: fibra optica, 3: ambas)"<<endl;
-                cin>>tipo;
-                
-                if(tipo==1){
-                    aux=soluciones.imprimir_desencolar(1);
-                    cout<<"numero de rutas encontradas: "<<aux<<endl;
-                }
-                else if (tipo==2){
-                    aux=soluciones.imprimir_desencolar(2);
-                    cout<<"numero de rutas encontradas: "<<aux<<endl;
-                }
-                else if (tipo==3){
-                    aux=soluciones.imprimir_desencolar(0);
-                    cout<<"numero de rutas encontradas: "<<aux<<endl;
-                }
-                else{
-                    cout<<"Numero invalido "<<endl;
-                }
+                aux=soluciones.imprimir_desencolar();
+                cout<<"numero de rutas encontradas: "<<aux<<endl;
+
                 break;
             case '4':
                 cout<<"Ingresa el hostname o ip: "<<endl;
