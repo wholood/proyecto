@@ -1,1 +1,1 @@
-void buscarRutas(Dispositivo*, Dispositivo*);
+            //no fue posible jaja
