@@ -871,50 +871,7 @@ void Inicio(){
 
 ///-------------------------------------------------------///
 int main (){
-    
-    /*string name[14]={"a","b","c","d","e","f","g","h","i","k","l","m","n","o"};
-    string dire[14]={"10","17","15","12","05","11","18","16","13","06","14","25","19","01"};
-    for(int i=0; i<14; i++){
-        //cout<<"Ingresa valor: \t"; 
-        //cin>>valor;
-        insertar_dispositivo(name[i],dire[i]);
-    }
-    establecer_conexion(141,"Fibra","a","b");
-    establecer_conexion(134,"Fibra","a","c");
-    establecer_conexion(144,"Fibra","a","d");
-    establecer_conexion(132,"Fibra","c","b");
-    establecer_conexion(121,"Fibra","b","d");*/
-    //establecer_conexion(1,"f","e","c");
-    //establecer_conexion(1,"f","e","b");
-    //establecer_conexion(1,"f","d","c");
-    //establecer_conexion(1,"f","c","b");
-    //establecer_conexion(1,"f","b","g");
-/*
-    mostrarrelacion(buscardispositivo("a")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo("b")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo("c")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"d")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"e")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"f")->lista_vecinos);cout<<endl;*/
-    //mostrarrelacion(buscardispositivo("g")->lista_vecinos);cout<<endl;
-    /*mostrarrelacion(buscardispositivo(lista,"h")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"i")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"k")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"l")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"m")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"n")->lista_vecinos);cout<<endl;
-    mostrarrelacion(buscardispositivo(lista,"o")->lista_vecinos);cout<<endl;
-
-    int aux;
-    
-    buscarRutas(buscardispositivo("a"),buscardispositivo("d"));
-    aux=soluciones.imprimir(1);
-    cout<<"numero de rutas encontradas: "<<aux<<endl;
- 
-    cout<<endl;
-*/
     Inicio();
-
 
     while(true){
        M_inicio();
