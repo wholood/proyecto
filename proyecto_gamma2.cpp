@@ -664,7 +664,7 @@ void M_eliminar_info(char &entrada){
             Salidas<<"1"<<endl;
             break;
         case '2':
-            cout<<"Ingrese los nombres o ip de los dispositivos: ";
+            cout<<"Ingrese los nombres o ip de los dispositivos: " <<endl;
             cin>>hostname>>host2;
             eliminarRelacion(hostname,host2);
             break;
@@ -721,7 +721,12 @@ void M_buscar_listar(char &entrada){
             case '4':
                 cout<<"Ingresa el hostname o ip: "<<endl;
                 cin>>host_ip;
-                mostrarrelacion(buscardispositivo(host_ip)->lista_vecinos);
+                if(buscardispositivo(host_ip)!=NULL){
+                    mostrarrelacion(buscardispositivo(host_ip)->lista_vecinos);
+                }else{
+                    cout<<"El dispositivo no esta registrado en el sistema"<<endl;
+                }
+                
                 break;
             case '5':
                 return;
