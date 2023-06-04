@@ -12,8 +12,8 @@ void Respaldar_Rutas(string h1, string h2);
 Dispositivo* buscardispositivo(string busqueda);
 bool buscarRutas(string h1, string h2);
 string rut_resp = "rutas_resp.dat",Disp_resp ="Dispositivos_resp.dat";
-fstream Rutas_resp(rut_resp,ios::in | ios:: out);
-fstream Dispositivo_resp(Disp_resp, ios::in | ios:: out);
+fstream Rutas_resp(rut_resp,ios::in | ios:: app);
+fstream Dispositivo_resp(Disp_resp, ios::in | ios:: app);
 fstream Salidas("resultados.out", ios:: out);
 
 //-----------------------///
