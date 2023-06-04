@@ -877,10 +877,7 @@ void Inicio(){
 ///-------------------------------------------------------///
 int main (){
     Inicio();
-
-    while(true){
-       M_inicio();
-    }
+    M_inicio();
 
     return 0;
 }
