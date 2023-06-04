@@ -610,7 +610,7 @@ void M_agregar_info(char &entrada){
                 }
                 break;
             case '2':
-                cout<<"Ingresa el hostname1, hostname2, ping, tipo: "<<endl;
+                cout<<"Ingresa el hostname1, hostname2, ping, tipo (Fibra o 5G): "<<endl;
                 cin>>hostname>>h2>>ping>>tipo;
                 flag=establecer_conexion(ping,tipo,hostname,h2);
                 if(flag){
@@ -698,7 +698,7 @@ void M_buscar_listar(char &entrada){
                     cout<<buscado->hostname<<", "<<buscado->ip<<endl;  
                 }
                 else{
-                    cout<<"El dispositivo indicado no existe";
+                    cout<<"El dispositivo indicado no existe"<<endl;
                 }
                 
                 break;
@@ -748,7 +748,7 @@ void M_Respaldar_Rutas(char &entrada){
     while(true){
         cout<<"Opcion: ";
         cin>>entrada;
-        ifstream Entrada_2("Dispositivo.dat");
+        ifstream Entrada_2("Dispositivos.dat");
         Dispositivo_resp.seekg(0);
         Rutas_resp.seekg(0);
         switch(entrada){
