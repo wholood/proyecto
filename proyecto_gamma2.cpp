@@ -107,12 +107,11 @@ class Cola {
     public:
 
     struct Nodo {
-        string dispositivo[500];
+        string dispositivo[501];
         int indice;
         Nodo *siguiente;
         int tipo;
         int ping_total;
-        int salto;
     };
     Nodo *frente;
     Nodo *final;
