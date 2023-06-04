@@ -4,7 +4,7 @@
 #include<cstdlib>//libreria para el exit y el clear
 
 using namespace std;
-//-----------Cabeceras-----------------//
+//----------------------------------------------------//Cabeceras
 class Dispositivo;
 int tipo_conexion_unaria(string h1, string h2);
 int obtener_ping(string h1, string h2);
@@ -16,7 +16,7 @@ fstream Rutas_resp(rut_resp,ios::in | ios:: app);
 fstream Dispositivo_resp(Disp_resp, ios::in | ios:: app);
 fstream Salidas("resultados.out", ios:: out);
 
-//-------------------------------Estructuras principales
+//------------------------------------------------------//Estructuras principales
 int ContDisp = 0, ContRel = 0;
 Dispositivo *lista = NULL;
 
