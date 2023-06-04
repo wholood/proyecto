@@ -811,6 +811,7 @@ void M_Respaldar_Rutas(char &entrada){
 
 void M_inicio(){
     char entrada;
+    system("clear");system("cls");
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Agregar informacion.\n2.\t Eliminar informacion.\n3.\t Buscar y listar.\n4.\t Mostrar respaldos.\n5.\t Creditos.\n6.\t Salir de la aplicacion."<<endl;
     cin>>entrada;
