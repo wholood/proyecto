@@ -1,11 +1,11 @@
 #include <iostream>
 #include <string>
 #include<fstream>
-#include<cstdlib>//funcion para el exit
+#include<cstdlib>//libreria para el exit y el clear
 
 using namespace std;
 //-----------Cabeceras-----------------//
-class Dispositivo; //Cabecera para que no se glichee
+class Dispositivo;
 int tipo_conexion_unaria(string h1, string h2);
 int obtener_ping(string h1, string h2);
 void Respaldar_Rutas(string h1, string h2);
@@ -16,7 +16,7 @@ fstream Rutas_resp(rut_resp,ios::in | ios:: app);
 fstream Dispositivo_resp(Disp_resp, ios::in | ios:: app);
 fstream Salidas("resultados.out", ios:: out);
 
-//-----------------------///
+//-------------------------------Estructuras principales
 int ContDisp = 0, ContRel = 0;
 Dispositivo *lista = NULL;
 
@@ -43,7 +43,7 @@ class Dispositivo{
     Dispositivo *siguiente_D; //Puntero para la lista de dispositivos del main
     public:
     Dispositivo(){
-        cont_relacion=0; //Por si acaso
+        cont_relacion=0;
         lista_vecinos=NULL;
     };
     void conectar (int ping_1, string tipo_1, Dispositivo *pana){
@@ -58,7 +58,6 @@ class Dispositivo{
         Relacion *aux1 = lista_vecinos; //Variable auxiliar para el ordenamiento
         Relacion *aux2;
 
-        //ESTA PENDIENDTE EL ORDENAMIENTO POR TIPO
         while((aux1!=NULL)&&(aux1->ping <ping_1)){ //Verificar si hay algun ping menor al de la nueva relacion y establecer el auxiliar para agregar el elemento en medio
             aux2=aux1;
             aux1=aux1->siguiente_R;
@@ -90,16 +89,12 @@ class Dispositivo{
 
         else if(anterior == NULL){
             lista_vecinos =lista_vecinos->siguiente_R;
-            //Respaldar_Rutas_relacion(aux);
             delete aux;
         }
         else{
             anterior->siguiente_R = aux->siguiente_R;
-            //Respaldar_Rutas_relacion(aux);
             delete aux;
         }
-        //Respaldar_Rutas la relacion a borrar
-        //delete aux;
         cont_relacion--;
     }
 };
@@ -285,7 +280,7 @@ class Pila{
     
 };
 
-Pila almacen; //Creo un arreglo para esta solucion
+Pila almacen;
 
 //------------------------------------------------------------//Respaldos
 
@@ -348,7 +343,8 @@ void Respaldar_Archivo(){
             if(Dispositivo_dat.is_open()){
                 Dispositivo_dat<<Disp1->hostname<<", ";
                 Dispositivo_dat<<actual->con_quien->hostname<<", ";
-                Dispositivo_dat<<actual->ping<<", ";                    Dispositivo_dat<<actual->tipo<<endl;      
+                Dispositivo_dat<<actual->ping<<", ";                    
+                Dispositivo_dat<<actual->tipo<<endl;      
             }
             Disp1->desconectar(actual->con_quien);
             actual->con_quien->desconectar(Disp1);
@@ -402,7 +398,6 @@ bool insertar_dispositivo(string nombre, string direccion){
 void mostrarlista(){
     Dispositivo *actual = lista;
     int i = 1;
-    //actual = lista;
     while(actual != NULL){
         cout<<i<<": "<<actual->hostname<<", "<<actual->ip<<endl;
         actual= actual->siguiente_D;
@@ -412,7 +407,6 @@ void mostrarlista(){
 
 void mostrarrelacion(Relacion *listado){
     Relacion *actual = listado;
-    //actual = lista;
     while(actual != NULL){
         cout<<"("<<actual->ping<<"|"<<actual->tipo<<"|"<<actual->con_quien->hostname<<")-> ";
         actual= actual->siguiente_R;
@@ -421,7 +415,7 @@ void mostrarrelacion(Relacion *listado){
 
 Dispositivo* buscardispositivo(string busqueda){
     //Dentro de lista dispositivo buscar el string del hostname o ip
-	Dispositivo *actual = lista; //Auxiliar para no romper nada
+	Dispositivo *actual = lista;
 
 	while ((actual !=NULL)&&(actual->hostname != busqueda)&&(actual->ip != busqueda)){
 		actual = actual->siguiente_D; //Voy recorriendo la lista siempre y cuando no consiga nada hasta el final (NULL)
@@ -433,7 +427,7 @@ Dispositivo* buscardispositivo(string busqueda){
 };
 
 bool verificar_relacion (Dispositivo *h1, Dispositivo *h2){
-    Relacion *actual = h1->lista_vecinos; //Auxiliar pa no romper nada
+    Relacion *actual = h1->lista_vecinos;
 
     while ((actual !=NULL)&&(actual->con_quien!=h2)){ //Recorro la lista de relaciones del dispositivo mientras no consiga h2 hasta el final
 		actual = actual->siguiente_R;
@@ -464,9 +458,10 @@ bool establecer_conexion(int ping_1, string tipo_1, string h_1, string h_2){
 int tipo_conexion_unaria(string inicio, string busqueda){
     Dispositivo *h1=buscardispositivo(inicio);
     Dispositivo *h2= buscardispositivo(busqueda);
-    Relacion *actual = h1->lista_vecinos; //Auxiliar pa no romper nada
+    Relacion *actual = h1->lista_vecinos; 
 
-    while ((actual !=NULL)&&(actual->con_quien!=h2)){ //Recorro la lista de relaciones del dispositivo mientras no consiga h2 hasta el final
+    while ((actual !=NULL)&&(actual->con_quien!=h2)){ 
+        //Recorro la lista de relaciones del dispositivo mientras no consiga h2 hasta el final
 		actual = actual->siguiente_R;
 	}
     if(actual->tipo=="Fibra"){
@@ -478,9 +473,10 @@ int tipo_conexion_unaria(string inicio, string busqueda){
 int obtener_ping(string inicio, string busqueda){
     Dispositivo *h1=buscardispositivo(inicio);
     Dispositivo *h2= buscardispositivo(busqueda);
-    Relacion *actual = h1->lista_vecinos; //Auxiliar pa no romper nada
+    Relacion *actual = h1->lista_vecinos;
 
-    while ((actual !=NULL)&&(actual->con_quien!=h2)){ //Recorro la lista de relaciones del dispositivo mientras no consiga h2 hasta el final
+    while ((actual !=NULL)&&(actual->con_quien!=h2)){ 
+        //Recorro la lista de relaciones del dispositivo mientras no consiga h2 hasta el final
 		actual = actual->siguiente_R;
 	}
 
@@ -489,7 +485,7 @@ int obtener_ping(string inicio, string busqueda){
 ///-------------------------------------------------------///Seccion de delete
 
 void eliminarDispositivo (string nombre){
-    if(lista!=NULL){ //Por si acaso
+    if(lista!=NULL){
         Dispositivo  *aux_borrar = buscardispositivo(nombre);
         Dispositivo  *anterior = lista;
         
@@ -498,7 +494,8 @@ void eliminarDispositivo (string nombre){
         }
         else{
             while ((aux_borrar != NULL)&&(anterior->siguiente_D != aux_borrar)){
-                anterior=anterior->siguiente_D; //Voy recorriendo la lista siempre y cuando no consiga nada hasta el final (NULL)
+                anterior=anterior->siguiente_D; 
+                //Voy recorriendo la lista siempre y cuando no consiga nada hasta el final (NULL)
             }
             anterior->siguiente_D=aux_borrar->siguiente_D;
         }
@@ -508,7 +505,7 @@ void eliminarDispositivo (string nombre){
 }
 
 void eliminarRelacion (string h1, string h2){
-    if(lista!=NULL){ //Por si acaso
+    if(lista!=NULL){
         bool flag=buscarRutas(h1,h2);
         if(flag){
             cout<<"Entre los dispositivos "<<h1<<" y "<<h2<<" se eliminaron las siguientes rutas: "<<endl;
@@ -523,7 +520,7 @@ void eliminarRelacion (string h1, string h2){
     }
 }
 
-///-------------------------------------------------------/// BUSQUEDA DE RUTAS DIABOLICAS
+///-------------------------------------------------------/// BUSQUEDA DE RUTAS
 
 
 void Back(Dispositivo *Actual, Dispositivo *Objetivo){
@@ -563,7 +560,6 @@ bool buscarRutas(string h1, string h2){
         if(soluciones.frente==NULL&&soluciones.final==NULL){
             Salidas<<"0"<<endl;
             return 0;
-            //no fue posible jaja
         }
         else{
             soluciones.verificar_tipo();
@@ -772,7 +768,6 @@ void M_Respaldar_Rutas(char &entrada){
                 break;
             case '2':
                 cout<<"Los dispositivos eliminados almacenados en el archivo Dispositivos_resp.dat son: "<<endl;
-                //Muestra el contenido del archivo de respaldo Dispositivo_resp.dat
                 if(Dispositivo_resp.is_open()){
                     do{
                         Dispositivo_resp>>host;
@@ -883,6 +878,5 @@ int main (){
     while(true){
         M_inicio();    
     }
-
     return 0;
 }
