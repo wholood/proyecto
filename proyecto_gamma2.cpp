@@ -2,7 +2,6 @@
 #include <string>
 #include<fstream>
 #include<cstdlib>//funcion para el exit
-#include<windows.h>//funciona para el clear
 
 using namespace std;
 //-----------Cabeceras-----------------//
@@ -589,7 +588,7 @@ int str_int(string entero){
 
 ///-------------------------------------------------------/// MENU 
 void M_agregar_info(char &entrada){
-    system("cls");
+    system("clear");system("cls");
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Agregar dispositivo.\n2.\t Agregar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
     string hostname,ip;
@@ -643,7 +642,7 @@ void M_agregar_info(char &entrada){
 };
 
 void M_eliminar_info(char &entrada){
-    system("cls");
+    system("clear");system("cls");
     cout<<" Universidad central de venezuela\nFacultad de Ciencias\nEscuela de Computacion\nOrquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Eliminar dispositivo.\n2.\t Eliminar ruta.\n3.\t Volver a Principal.\n4.\t Salir de la aplicacion."<<endl;
     string hostname,host2;
@@ -684,7 +683,7 @@ void M_eliminar_info(char &entrada){
 };
 
 void M_buscar_listar(char &entrada){
-    system("cls");
+    system("clear");system("cls");
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Consultar dispositivo.\n2.\t Listado de Dispositivos.\n3.\t Buscar ruta(1: 5G, 2: fibra optica, 3: ambas).\n4.\t Dispositivos adyacentes.\n5.\t Volver a Principal.\n6.\t Salir de la aplicacion."<<endl;
     Dispositivo *buscado;
@@ -739,7 +738,8 @@ void M_buscar_listar(char &entrada){
 };
 
 void M_Respaldar_Rutas(char &entrada){
-    system("cls");
+    system("clear");system("cls");
+    
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Listado de dispositivos existentes.\n2.\t Listado de dispositivos eliminados.\n3.\t Listado de rutas eliminadas.\n4.\t Volver a Principal.\n5.\t Salir de la aplicacion."<<endl;
     
@@ -876,7 +876,9 @@ void Inicio(){
 ///-------------------------------------------------------///
 int main (){
     Inicio();
-    M_inicio();
+    while(true){
+        M_inicio();    
+    }
 
     return 0;
 }
