@@ -20,6 +20,7 @@ fstream Salidas("resultados.out", ios:: out);
 //-----------------------///
 int ContDisp = 0, ContRel = 0;
 Dispositivo *lista = NULL;
+
 class Relacion{
     public: 
     int ping;
@@ -103,6 +104,7 @@ class Dispositivo{
         cont_relacion--;
     }
 };
+
 class Cola {
     public:
 
@@ -309,6 +311,7 @@ void Respaldar_Rutas(string h1,string h2){
         Disp2->desconectar(Disp1);
     } 
 }
+
 void Respaldar_Dispositivo(Dispositivo* Disp1){
     Relacion *actual = Disp1->lista_vecinos;
     ContDisp--;
@@ -329,6 +332,7 @@ void Respaldar_Dispositivo(Dispositivo* Disp1){
         actual = actual->siguiente_R;
     }      
 }
+
 void Respaldar_Archivo(){
     fstream Dispositivo_dat("Dispositivos.dat", ios:: out);
     Dispositivo* Disp1 = lista;
@@ -356,6 +360,7 @@ void Respaldar_Archivo(){
     } 
     Dispositivo_dat.close();   
 }
+
 void Respaldar_DispositivoExistente(){
     fstream Dispositivo_dat("Dispositivos.dat", ios:: out);
     Dispositivo* Disp1 = lista;
@@ -569,11 +574,13 @@ bool buscarRutas(string h1, string h2){
     }
     return 0;
 }
+
 void Verificar_coma(string &Entrada){
     if(Entrada.at(Entrada.length()- 1) == ','){
         Entrada.pop_back();
     }
 }
+
 int str_int(string entero){
     Verificar_coma(entero);
     int aux = stoi(entero);
@@ -865,8 +872,6 @@ void Inicio(){
     }
     Entrada.close();
 }
-
-
 
 ///-------------------------------------------------------///
 int main (){
