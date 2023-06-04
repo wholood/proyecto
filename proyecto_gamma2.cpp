@@ -363,7 +363,6 @@ void Respaldar_Archivo(){
 void Respaldar_DispositivoExistente(){
     fstream Dispositivo_dat("Dispositivos.dat", ios:: out);
     Dispositivo* Disp1 = lista;
-    Relacion *actual = Disp1->lista_vecinos;
     Dispositivo_dat<<ContDisp<<endl;
     while(Disp1 != NULL){
         Dispositivo_dat<<Disp1->hostname<<", "<<Disp1->ip<<endl;
