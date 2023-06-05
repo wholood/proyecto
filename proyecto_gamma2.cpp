@@ -612,15 +612,27 @@ void M_agregar_info(char &entrada){
             case '2':
                 cout<<"Ingresa el hostname1, hostname2, ping, tipo (Fibra o 5G): "<<endl;
                 cin>>hostname>>h2>>ping>>tipo;
-                flag=establecer_conexion(ping,tipo,hostname,h2);
-                if(flag){
-                    cout<<"Se agrego una ruta entre "<<hostname<<" y "<<h2<<endl;
-                    Salidas<<"1"<<endl;    
-                }
-                else{
+                if(buscardispositivo(hostname) != NULL && buscardispositivo(h2) != NULL){
+                    flag=establecer_conexion(ping,tipo,hostname,h2);
+                    if(flag){
+                        cout<<"Se agrego una ruta entre "<<hostname<<" y "<<h2<<endl;
+                        Salidas<<"1"<<endl;    
+                    }
+                    else{
+                        cout<<"No fue posible establecer la conexion\n";
+                        Salidas<<"0"<<endl; 
+                    }
+                }else if(buscardispositivo(hostname) == NULL && buscardispositivo(h2) == NULL){
                     cout<<"No fue posible establecer la conexion\n";
-                    Salidas<<"0"<<endl; 
+                    Salidas<<"-1"<<endl;
+                }else if(buscardispositivo(hostname) == NULL){
+                    cout<<"No fue posible establecer la conexion\n";
+                    Salidas<<"-3"<<endl;
+                }else{
+                    cout<<"No fue posible establecer la conexion\n";
+                    Salidas<<"-2"<<endl;
                 }
+                
                 break;
             case '3':
                 return;
