@@ -812,6 +812,7 @@ void M_inicio(){
     system("clear");system("cls");
     cout<<" Universidad central de venezuela\n Facultad de Ciencias\n Escuela de Computacion\n Orquestador de Redes de conectividad\n\nMenu de opciones:"<<endl;
     cout<<"1.\t Agregar informacion.\n2.\t Eliminar informacion.\n3.\t Buscar y listar.\n4.\t Mostrar respaldos.\n5.\t Creditos.\n6.\t Salir de la aplicacion."<<endl;
+    
     cin>>entrada;
 
     switch(entrada){
@@ -831,6 +832,8 @@ void M_inicio(){
             cout<<endl<<endl<<"---------"<<endl;
             cout<<"Carlos Cao \tC.I. 28.655.925\nErimar Reis \tC.I. 29.743.464\n";
             cout<<endl<<endl<<"---------"<<endl;
+            cout<<"Ingresa 0 para volver"<<endl;
+            cin>>entrada;
             break;
         case '6':
             Respaldar_Archivo();
