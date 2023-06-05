@@ -12,8 +12,8 @@ void Respaldar_Rutas(string h1, string h2);
 Dispositivo* buscardispositivo(string busqueda);
 bool buscarRutas(string h1, string h2);
 string rut_resp = "rutas_resp.dat",Disp_resp ="Dispositivos_resp.dat";
-fstream Rutas_resp(rut_resp,ios::in | ios:: app);
-fstream Dispositivo_resp(Disp_resp, ios::in | ios:: app);
+fstream Rutas_resp(rut_resp,ios:: app);
+fstream Dispositivo_resp(Disp_resp,ios:: app);
 fstream Salidas("resultados.out", ios:: out);
 
 //------------------------------------------------------//Estructuras principales
@@ -748,9 +748,7 @@ void M_Respaldar_Rutas(char &entrada){
     while(true){
         cout<<"Opcion: ";
         cin>>entrada;
-        ifstream Entrada_2("Dispositivos.dat");
-        Dispositivo_resp.seekg(0);
-        Rutas_resp.seekg(0);
+        ifstream Entrada_2("Dispositivos.dat"),Dispositivo_resp2(Disp_resp),Rutas_resp2(rut_resp);
         switch(entrada){
             case '1': 
                 Respaldar_DispositivoExistente();
@@ -768,30 +766,30 @@ void M_Respaldar_Rutas(char &entrada){
                 break;
             case '2':
                 cout<<"Los dispositivos eliminados almacenados en el archivo Dispositivos_resp.dat son: "<<endl;
-                if(Dispositivo_resp.is_open()){
+                if(Dispositivo_resp2.is_open()){
                     do{
-                        Dispositivo_resp>>host;
-                        Dispositivo_resp>>ip;
+                        Dispositivo_resp2>>host;
+                        Dispositivo_resp2>>ip;
                         cout<< host <<" "<< ip<< endl;
                         host =" "; ip=" ";
-                    }while(!Dispositivo_resp.eof());
+                    }while(!Dispositivo_resp2.eof());
                         
                     
                 }
                 break;
             case '3':
                 cout<<"Las rutas eliminadas almacenadas en el archivo Rutas_resp.dat son: "<<endl;
-                if(Rutas_resp.is_open()){
+                if(Rutas_resp2.is_open()){
                     do{
-                        Rutas_resp>>host;
+                        Rutas_resp2>>host;
                         cout<<host<<" ";
-                        Rutas_resp>>host;
+                        Rutas_resp2>>host;
                         cout<<host<<" ";
-                        Rutas_resp>>host;
-                        Rutas_resp>>ip;
+                        Rutas_resp2>>host;
+                        Rutas_resp2>>ip;
                         cout<<host<<" "<<ip<<endl;
                         host=" ", ip = " ";
-                    }while(!Rutas_resp.eof());
+                    }while(!Rutas_resp2.eof());
                 }                
                 break;
             case '4':               
